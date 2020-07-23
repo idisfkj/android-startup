@@ -1,0 +1,3 @@
+include ':android-startup'
+include ':app'
+rootProject.name = "android-startup"
