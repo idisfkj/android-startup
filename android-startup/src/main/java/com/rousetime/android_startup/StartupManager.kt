@@ -1,7 +1,6 @@
 package com.rousetime.android_startup
 
 import android.os.Looper
-import com.rousetime.android_startup.executor.ExecutorManager
 import com.rousetime.android_startup.model.LoggerLevel
 import com.rousetime.android_startup.sort.TopologySort
 import com.rousetime.android_startup.utils.StartupLogUtils
@@ -13,18 +12,12 @@ import java.util.concurrent.atomic.AtomicInteger
  * Created by idisfkj on 2020/7/24.
  * Email : idisfkj@gmail.com.
  */
-class StartupManager private constructor(builder: Builder) {
+class StartupManager private constructor(
+    private val startupList: List<AndroidStartup<*>>,
+    private val needAwaitCount: AtomicInteger,
+    loggerLevel: LoggerLevel
+) {
 
-    private var startupList: List<AndroidStartup<*>>
-    private var needAwaitCount: AtomicInteger? = null
-    private var loggerLevel: LoggerLevel = LoggerLevel.NONE
-
-    init {
-        startupList = builder.startupList
-        needAwaitCount = builder.needAwaitCount
-        loggerLevel = builder.loggerLevel
-        StartupLogUtils.level = loggerLevel
-    }
 
     private var mAwaitCountDownLatch: CountDownLatch? = null
     private var mStartTime: Long = 0L
@@ -34,29 +27,35 @@ class StartupManager private constructor(builder: Builder) {
 
         class Builder {
 
-            var startupList = mutableListOf<AndroidStartup<*>>()
-                private set
-            var needAwaitCount = AtomicInteger()
-                private set
-            var loggerLevel = LoggerLevel.NONE
-                private set
+            private var mStartupList = mutableListOf<AndroidStartup<*>>()
+            private var mNeedAwaitCount = AtomicInteger()
+            private var mLoggerLevel = LoggerLevel.NONE
 
             fun addStartup(startup: AndroidStartup<*>) = apply {
-                startupList.add(startup)
+                mStartupList.add(startup)
                 if (startup.isNeedWait() && !startup.isOnMainThread()) {
-                    needAwaitCount.incrementAndGet()
+                    mNeedAwaitCount.incrementAndGet()
                 }
             }
 
             fun setLoggerLevel(level: LoggerLevel) = apply {
-                loggerLevel = level
+                mLoggerLevel = level
             }
 
             fun build(): StartupManager {
-                return StartupManager(this)
+                return StartupManager(
+                    mStartupList,
+                    mNeedAwaitCount,
+                    mLoggerLevel
+                )
             }
         }
     }
+
+    init {
+        StartupLogUtils.level = loggerLevel
+    }
+
 
     fun start() = apply {
         if (startupList.isNullOrEmpty()) {
@@ -71,7 +70,7 @@ class StartupManager private constructor(builder: Builder) {
             throw RuntimeException("start method repeated call.")
         }
 
-        mAwaitCountDownLatch = CountDownLatch(needAwaitCount?.get() ?: 0)
+        mAwaitCountDownLatch = CountDownLatch(needAwaitCount.get())
         TopologySort.sort(startupList).run {
             mStartTime = System.nanoTime()
             execute(this)
