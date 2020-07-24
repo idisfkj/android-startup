@@ -10,6 +10,6 @@ interface Startup<T> {
 
     fun create(context: Context): T
 
-    fun <T> dependencies(): List<Class<out Startup<T>>>
+    fun dependencies(): List<Class<out Startup<*>>>?
 
 }

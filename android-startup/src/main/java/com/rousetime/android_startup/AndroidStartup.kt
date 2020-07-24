@@ -11,7 +11,7 @@ import java.util.concurrent.Executor
  */
 abstract class AndroidStartup<T> : Startup<T>, StartupExecutor {
 
-    private val waitCountDown by lazy { CountDownLatch(dependencies<T>().size) }
+    private val waitCountDown by lazy { CountDownLatch(dependencies()?.size ?: 0) }
 
     fun toWait() {
         try {
@@ -27,8 +27,8 @@ abstract class AndroidStartup<T> : Startup<T>, StartupExecutor {
 
     override fun createExecutor(): Executor = ExecutorManager.instance.ioExecutor
 
-    override fun <T> dependencies(): List<Class<out Startup<T>>> {
-        return mutableListOf()
+    override fun dependencies(): List<Class<out Startup<*>>>? {
+        return null
     }
 
     abstract fun isOnMainThread(): Boolean

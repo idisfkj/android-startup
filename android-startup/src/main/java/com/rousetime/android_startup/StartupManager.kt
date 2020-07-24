@@ -1,7 +1,9 @@
 package com.rousetime.android_startup
 
 import android.os.Looper
+import com.rousetime.android_startup.executor.ExecutorManager
 import com.rousetime.android_startup.model.LoggerLevel
+import com.rousetime.android_startup.sort.TopologySort
 import com.rousetime.android_startup.utils.StartupLogUtils
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -13,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger
  */
 class StartupManager private constructor(builder: Builder) {
 
-    private var startupList: List<AndroidStartup<*>>? = null
+    private var startupList: List<AndroidStartup<*>>
     private var needAwaitCount: AtomicInteger? = null
     private var loggerLevel: LoggerLevel = LoggerLevel.NONE
 
@@ -70,7 +72,14 @@ class StartupManager private constructor(builder: Builder) {
         }
 
         mAwaitCountDownLatch = CountDownLatch(needAwaitCount?.get() ?: 0)
-        mStartTime = System.nanoTime()
+        TopologySort.sort(startupList).run {
+            mStartTime = System.nanoTime()
+            execute(this)
+        }
+    }
+
+    private fun execute(list: List<AndroidStartup<*>>) {
+        StartupLogUtils.d("execute start ${list.size}")
     }
 
     fun await() {
