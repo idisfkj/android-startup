@@ -1,4 +1,4 @@
-package com.rousetime.android_startup
+package com.rousetime.sample
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

@@ -66,7 +66,9 @@ object TopologySort {
     private fun printResult(result: List<AndroidStartup<*>>) {
         val printBuilder = buildString {
             result.forEach {
-                this.append("Class: $it")
+                this.append("\n")
+                    .append("Class: ${it::class.java.simpleName}")
+                    .append(" => ")
                     .append("Dependencies size: ${it.dependencies()?.size ?: 0}")
                     .append("MainThread: ${it.isOnMainThread()}")
                     .append("NeedWait: ${it.isNeedWait()}")

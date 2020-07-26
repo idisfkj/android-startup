@@ -13,10 +13,10 @@ object StartupLogUtils {
     var level: LoggerLevel = LoggerLevel.NONE
 
     fun e(message: String) {
-        if (level >= LoggerLevel.ERROR) Log.d(TAG, message)
+        if (level >= LoggerLevel.ERROR) Log.e(TAG, message)
     }
 
     fun d(message: String) {
-        if (level >= LoggerLevel.DEBUG) Log.v(TAG, message)
+        if (level >= LoggerLevel.DEBUG) Log.d(TAG, message)
     }
 }

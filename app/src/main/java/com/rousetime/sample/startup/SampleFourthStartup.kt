@@ -1,4 +1,4 @@
-package com.rousetime.android_startup.startup
+package com.rousetime.sample.startup
 
 import android.content.Context
 import com.rousetime.android_startup.AndroidStartup

@@ -1,11 +1,12 @@
-package com.rousetime.android_startup
+package com.rousetime.sample
 
 import android.app.Application
+import com.rousetime.android_startup.StartupManager
 import com.rousetime.android_startup.model.LoggerLevel
-import com.rousetime.android_startup.startup.SampleFirstStartup
-import com.rousetime.android_startup.startup.SampleFourthStartup
-import com.rousetime.android_startup.startup.SampleSecondStartup
-import com.rousetime.android_startup.startup.SampleThirdStartup
+import com.rousetime.sample.startup.SampleFirstStartup
+import com.rousetime.sample.startup.SampleFourthStartup
+import com.rousetime.sample.startup.SampleSecondStartup
+import com.rousetime.sample.startup.SampleThirdStartup
 
 /**
  * Created by idisfkj on 2020/7/24.

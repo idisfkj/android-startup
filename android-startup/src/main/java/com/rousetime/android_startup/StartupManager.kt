@@ -88,7 +88,7 @@ class StartupManager private constructor(
 
         try {
             mAwaitCountDownLatch?.await(AWAIT_TIMEOUT, TimeUnit.MILLISECONDS)
-            StartupLogUtils.d("totalTime: ${System.nanoTime() - mStartTime}")
+            StartupLogUtils.d("totalTime: ${(System.nanoTime() - mStartTime / 1000L)}")
         } catch (e: InterruptedException) {
             e.printStackTrace()
         }

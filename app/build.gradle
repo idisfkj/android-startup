@@ -6,7 +6,7 @@ android {
     compileSdkVersion Versions.compile_sdk_version
 
     defaultConfig {
-        applicationId "com.rousetime.android_startup"
+        applicationId "com.rousetime.sample"
         minSdkVersion Versions.min_sdk_version
         targetSdkVersion Versions.target_sdk_version
         versionCode Versions.version_code
