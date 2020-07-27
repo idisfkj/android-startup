@@ -2,6 +2,7 @@ package com.rousetime.android_startup.sort
 
 import com.rousetime.android_startup.AndroidStartup
 import com.rousetime.android_startup.Startup
+import com.rousetime.android_startup.model.StartupSortStore
 import com.rousetime.android_startup.utils.StartupLogUtils
 import java.util.*
 
@@ -11,17 +12,18 @@ import java.util.*
  */
 object TopologySort {
 
-    fun sort(startupList: List<AndroidStartup<*>>): List<AndroidStartup<*>> {
+    fun sort(startupList: List<AndroidStartup<*>>): StartupSortStore {
 
-        val result = mutableListOf<AndroidStartup<*>>()
-        val startupMap = hashMapOf<Class<out Startup<*>>, AndroidStartup<*>>()
+        val mainResult = mutableListOf<AndroidStartup<*>>()
+        val ioResult = mutableListOf<AndroidStartup<*>>()
+        val clazzMap = hashMapOf<Class<out Startup<*>>, AndroidStartup<*>>()
         val zeroDeque = ArrayDeque<Class<out Startup<*>>>()
-        val childrenStartupMap = hashMapOf<Class<out Startup<*>>, MutableList<Class<out Startup<*>>>>()
+        val clazzChildrenMap = hashMapOf<Class<out Startup<*>>, MutableList<Class<out Startup<*>>>>()
         val inDegreeMap = hashMapOf<Class<out Startup<*>>, Int>()
 
         startupList.forEach {
-            if (!startupMap.containsKey(it.javaClass)) {
-                startupMap[it.javaClass] = it
+            if (!clazzMap.containsKey(it.javaClass)) {
+                clazzMap[it.javaClass] = it
                 // save in-degree
                 inDegreeMap[it.javaClass] = it.dependencies()?.size ?: 0
                 if (it.dependencies().isNullOrEmpty()) {
@@ -29,10 +31,10 @@ object TopologySort {
                 } else {
                     // add key parent, value list children
                     it.dependencies()?.forEach { parent ->
-                        if (childrenStartupMap[parent] == null) {
-                            childrenStartupMap[parent] = arrayListOf()
+                        if (clazzChildrenMap[parent] == null) {
+                            clazzChildrenMap[parent] = arrayListOf()
                         }
-                        childrenStartupMap[parent]?.add(it.javaClass)
+                        clazzChildrenMap[parent]?.add(it.javaClass)
                     }
                 }
             } else {
@@ -42,11 +44,15 @@ object TopologySort {
 
         while (!zeroDeque.isEmpty()) {
             zeroDeque.poll()?.let {
-                startupMap[it]?.let { androidStartup ->
+                clazzMap[it]?.let { androidStartup ->
                     // add zero in-degree to result list
-                    result.add(androidStartup)
+                    if (androidStartup.isOnMainThread()) {
+                        mainResult.add(androidStartup)
+                    } else {
+                        ioResult.add(androidStartup)
+                    }
                 }
-                childrenStartupMap[it]?.forEach { children ->
+                clazzChildrenMap[it]?.forEach { children ->
                     inDegreeMap[children] = inDegreeMap[children]?.minus(1) ?: 0
                     // add zero in-degree to deque
                     if (inDegreeMap[children] == 0) {
@@ -56,11 +62,21 @@ object TopologySort {
             }
         }
 
-        if (result.size != startupList.size) {
+        if (mainResult.size + ioResult.size != startupList.size) {
             throw RuntimeException("have circle dependencies.")
         }
-        printResult(result)
-        return result
+
+        printResult(mutableListOf<AndroidStartup<*>>().apply {
+            addAll(mainResult)
+            addAll(ioResult)
+        })
+
+        return StartupSortStore(
+            mainResult,
+            ioResult,
+            clazzMap,
+            clazzChildrenMap
+        )
     }
 
     private fun printResult(result: List<AndroidStartup<*>>) {
@@ -68,10 +84,10 @@ object TopologySort {
             result.forEach {
                 this.append("\n")
                     .append("Class: ${it::class.java.simpleName}")
-                    .append(" => ")
-                    .append("Dependencies size: ${it.dependencies()?.size ?: 0}")
-                    .append("MainThread: ${it.isOnMainThread()}")
-                    .append("NeedWait: ${it.isNeedWait()}")
+                    .append(" =>")
+                    .append(" Dependencies size: ${it.dependencies()?.size ?: 0}")
+                    .append(" MainThread: ${it.isOnMainThread()}")
+                    .append(" NeedWait: ${it.isNeedWait()}")
                     .append("\n")
             }
         }

@@ -20,6 +20,10 @@ class SampleFourthStartup : AndroidStartup<Any>() {
     }
 
     override fun dependencies(): List<Class<out Startup<*>>>? {
-        return listOf(SampleFirstStartup::class.java, SampleSecondStartup::class.java, SampleThirdStartup::class.java)
+        return listOf(
+            SampleFirstStartup::class.java,
+            SampleSecondStartup::class.java,
+            SampleThirdStartup::class.java
+        )
     }
 }

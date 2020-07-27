@@ -2,6 +2,7 @@ package com.rousetime.sample
 
 import android.app.Application
 import com.rousetime.android_startup.StartupManager
+import com.rousetime.android_startup.executor.ExecutorManager
 import com.rousetime.android_startup.model.LoggerLevel
 import com.rousetime.sample.startup.SampleFirstStartup
 import com.rousetime.sample.startup.SampleFourthStartup
@@ -22,7 +23,7 @@ class SampleApplication : Application() {
             .addStartup(SampleSecondStartup())
             .addStartup(SampleThirdStartup())
             .addStartup(SampleFourthStartup())
-            .build()
+            .build(this)
             .start()
             .await()
     }
