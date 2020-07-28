@@ -2,6 +2,7 @@ package com.rousetime.android_startup.sort
 
 import com.rousetime.android_startup.AndroidStartup
 import com.rousetime.android_startup.Startup
+import com.rousetime.android_startup.execption.StartupException
 import com.rousetime.android_startup.model.StartupSortStore
 import com.rousetime.android_startup.utils.StartupLogUtils
 import java.util.*
@@ -38,7 +39,7 @@ object TopologySort {
                     }
                 }
             } else {
-                throw RuntimeException("$it multiple add.")
+                throw StartupException("$it multiple add.")
             }
         }
 
@@ -63,7 +64,7 @@ object TopologySort {
         }
 
         if (mainResult.size + ioResult.size != startupList.size) {
-            throw RuntimeException("have circle dependencies.")
+            throw StartupException("have circle dependencies.")
         }
 
         printResult(mutableListOf<AndroidStartup<*>>().apply {

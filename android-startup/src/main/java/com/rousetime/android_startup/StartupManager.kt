@@ -3,6 +3,7 @@ package com.rousetime.android_startup
 import android.content.Context
 import android.os.Looper
 import com.rousetime.android_startup.dispatcher.ManagerDispatcher
+import com.rousetime.android_startup.execption.StartupException
 import com.rousetime.android_startup.model.LoggerLevel
 import com.rousetime.android_startup.model.StartupSortStore
 import com.rousetime.android_startup.run.StartupRunnable
@@ -70,15 +71,15 @@ class StartupManager private constructor(
 
     fun start() = apply {
         if (startupList.isNullOrEmpty()) {
-            throw RuntimeException("Startup is empty, add at least one startup.")
+            throw StartupException("Startup is empty, add at least one startup.")
         }
 
         if (Looper.getMainLooper() != Looper.myLooper()) {
-            throw RuntimeException("start method must be call in MainThread.")
+            throw StartupException("start method must be call in MainThread.")
         }
 
         if (mAwaitCountDownLatch != null) {
-            throw RuntimeException("start method repeated call.")
+            throw StartupException("start method repeated call.")
         }
 
         mAwaitCountDownLatch = CountDownLatch(needAwaitCount.get())
@@ -138,7 +139,7 @@ class StartupManager private constructor(
      */
     fun await() {
         if (mAwaitCountDownLatch == null) {
-            throw RuntimeException("must be call start method before call await method.")
+            throw StartupException("must be call start method before call await method.")
         }
 
         try {
