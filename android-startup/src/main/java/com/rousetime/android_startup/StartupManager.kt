@@ -29,7 +29,7 @@ class StartupManager private constructor(
     private var mStartTime: Long = 0L
 
     companion object {
-        private const val AWAIT_TIMEOUT = 10000L
+        const val AWAIT_TIMEOUT = 10000L
     }
 
     class Builder {
@@ -43,6 +43,12 @@ class StartupManager private constructor(
             mStartupList.add(startup)
             if (startup.waitOnMainThread() && !startup.callCreateOnMainThread()) {
                 mNeedAwaitCount.incrementAndGet()
+            }
+        }
+
+        fun addAllStartup(list: List<AndroidStartup<*>>) = apply {
+            list.forEach {
+                addStartup(it)
             }
         }
 

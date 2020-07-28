@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="android_startup" translatable="false">android.startup</string>
+    <string name="android_startup_provider_config" translatable="false">android.startup.provider.config</string>
+</resources>
