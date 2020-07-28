@@ -8,6 +8,7 @@ import android.database.Cursor
 import android.net.Uri
 import com.rousetime.android_startup.AndroidStartup
 import com.rousetime.android_startup.R
+import com.rousetime.android_startup.Startup
 import com.rousetime.android_startup.StartupManager
 import com.rousetime.android_startup.execption.StartupException
 import com.rousetime.android_startup.model.LoggerLevel
@@ -56,6 +57,8 @@ class StartupProvider : ContentProvider() {
 
     private fun discoverAndInitialize(): StartupProviderStore {
         val result = mutableListOf<AndroidStartup<*>>()
+        val initialize = mutableListOf<Class<out Startup<*>>>()
+        val initialized = mutableListOf<Class<out Startup<*>>>()
         var config: StartupProviderConfig? = null
         try {
             context?.let {
@@ -69,7 +72,7 @@ class StartupProvider : ContentProvider() {
                         val clazz = Class.forName(key)
                         if (startup == value) {
                             if (AndroidStartup::class.java.isAssignableFrom(clazz)) {
-                                result.add(clazz.getConstructor().newInstance() as AndroidStartup<*>)
+                                doInitialize((clazz.getConstructor().newInstance() as AndroidStartup<*>), result, initialize, initialized)
                             }
                         } else if (providerConfig == value) {
                             if (StartupProviderConfig::class.java.isAssignableFrom(clazz)) {
@@ -83,5 +86,29 @@ class StartupProvider : ContentProvider() {
             throw StartupException(t)
         }
         return StartupProviderStore(result, config)
+    }
+
+    private fun doInitialize(
+        startup: AndroidStartup<*>,
+        result: MutableList<AndroidStartup<*>>,
+        initialize: MutableList<Class<out Startup<*>>>,
+        initialized: MutableList<Class<out Startup<*>>>
+    ) {
+        try {
+            if (initialize.contains(startup::class.java)) {
+                throw IllegalStateException("have circle dependencies.")
+            }
+            if (!initialized.contains(startup::class.java)) {
+                initialize.add(startup::class.java)
+                result.add(startup)
+                startup.dependencies()?.forEach {
+                    doInitialize(it.getConstructor().newInstance() as AndroidStartup<*>, result, initialize, initialized)
+                }
+                initialize.remove(startup::class.java)
+                initialized.add(startup::class.java)
+            }
+        } catch (t: Throwable) {
+            throw StartupException(t)
+        }
     }
 }
