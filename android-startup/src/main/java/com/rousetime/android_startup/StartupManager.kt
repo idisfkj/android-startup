@@ -24,44 +24,43 @@ class StartupManager private constructor(
     loggerLevel: LoggerLevel
 ) {
 
-
     private var mAwaitCountDownLatch: CountDownLatch? = null
     private var mStartTime: Long = 0L
 
     companion object {
         private const val AWAIT_TIMEOUT = 10000L
+    }
 
-        class Builder {
+    class Builder {
 
-            private var mStartupList = mutableListOf<AndroidStartup<*>>()
-            private var mNeedAwaitCount = AtomicInteger()
-            private var mLoggerLevel = LoggerLevel.NONE
-            private var mAwaitTimeout = AWAIT_TIMEOUT
+        private var mStartupList = mutableListOf<AndroidStartup<*>>()
+        private var mNeedAwaitCount = AtomicInteger()
+        private var mLoggerLevel = LoggerLevel.NONE
+        private var mAwaitTimeout = AWAIT_TIMEOUT
 
-            fun addStartup(startup: AndroidStartup<*>) = apply {
-                mStartupList.add(startup)
-                if (startup.waitOnMainThread() && !startup.callCreateOnMainThread()) {
-                    mNeedAwaitCount.incrementAndGet()
-                }
+        fun addStartup(startup: AndroidStartup<*>) = apply {
+            mStartupList.add(startup)
+            if (startup.waitOnMainThread() && !startup.callCreateOnMainThread()) {
+                mNeedAwaitCount.incrementAndGet()
             }
+        }
 
-            fun setLoggerLevel(level: LoggerLevel) = apply {
-                mLoggerLevel = level
-            }
+        fun setLoggerLevel(level: LoggerLevel) = apply {
+            mLoggerLevel = level
+        }
 
-            fun setAwaitTimeout(timeoutMilliSeconds: Long) = apply {
-                mAwaitTimeout = timeoutMilliSeconds
-            }
+        fun setAwaitTimeout(timeoutMilliSeconds: Long) = apply {
+            mAwaitTimeout = timeoutMilliSeconds
+        }
 
-            fun build(context: Context): StartupManager {
-                return StartupManager(
-                    context,
-                    mStartupList,
-                    mNeedAwaitCount,
-                    mAwaitTimeout,
-                    mLoggerLevel
-                )
-            }
+        fun build(context: Context): StartupManager {
+            return StartupManager(
+                context,
+                mStartupList,
+                mNeedAwaitCount,
+                mAwaitTimeout,
+                mLoggerLevel
+            )
         }
     }
 

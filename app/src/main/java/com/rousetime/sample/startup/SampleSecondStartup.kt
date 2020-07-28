@@ -3,7 +3,9 @@ package com.rousetime.sample.startup
 import android.content.Context
 import com.rousetime.android_startup.AndroidStartup
 import com.rousetime.android_startup.Startup
+import com.rousetime.android_startup.executor.ExecutorManager
 import com.rousetime.android_startup.utils.StartupLogUtils
+import java.util.concurrent.Executor
 
 /**
  * Created by idisfkj on 2020/7/24.
@@ -18,6 +20,10 @@ class SampleSecondStartup : AndroidStartup<Boolean>() {
     override fun create(context: Context): Boolean {
         Thread.sleep(5000)
         return true
+    }
+
+    override fun createExecutor(): Executor {
+        return ExecutorManager.instance.cpuExecutor
     }
 
     override fun dependencies(): List<Class<out Startup<*>>>? {

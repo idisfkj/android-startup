@@ -16,8 +16,8 @@ class SampleApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        StartupManager.Companion.Builder()
-            .setAwaitTimeout(1200)
+        StartupManager.Builder()
+            .setAwaitTimeout(12000)
             .setLoggerLevel(LoggerLevel.DEBUG)
             .addStartup(SampleFirstStartup())
             .addStartup(SampleSecondStartup())
