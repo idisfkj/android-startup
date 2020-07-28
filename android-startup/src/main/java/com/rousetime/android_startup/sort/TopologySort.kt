@@ -46,7 +46,7 @@ object TopologySort {
             zeroDeque.poll()?.let {
                 clazzMap[it]?.let { androidStartup ->
                     // add zero in-degree to result list
-                    if (androidStartup.isOnMainThread()) {
+                    if (androidStartup.callCreateOnMainThread()) {
                         mainResult.add(androidStartup)
                     } else {
                         ioResult.add(androidStartup)
@@ -86,8 +86,8 @@ object TopologySort {
                     .append("Class: ${it::class.java.simpleName}")
                     .append(" =>")
                     .append(" Dependencies size: ${it.dependencies()?.size ?: 0}")
-                    .append(" MainThread: ${it.isOnMainThread()}")
-                    .append(" NeedWait: ${it.isNeedWait()}")
+                    .append(" MainThread: ${it.callCreateOnMainThread()}")
+                    .append(" NeedWait: ${it.waitOnMainThread()}")
                     .append("\n")
             }
         }

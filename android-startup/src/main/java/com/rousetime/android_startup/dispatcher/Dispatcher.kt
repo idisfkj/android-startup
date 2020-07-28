@@ -6,11 +6,23 @@ package com.rousetime.android_startup.dispatcher
  */
 interface Dispatcher {
 
-    fun isOnMainThread(): Boolean
+    /**
+     * Return true call the create function on main thread otherwise false.
+     */
+    fun callCreateOnMainThread(): Boolean
 
-    fun isNeedWait(): Boolean
+    /**
+     * Return true block the main thread until the startup completed otherwise false.
+     */
+    fun waitOnMainThread(): Boolean
 
+    /**
+     * To wait dependencies startup completed.
+     */
     fun toWait()
 
+    /**
+     * To notify the startup when dependencies startup completed.
+     */
     fun toNotify()
 }

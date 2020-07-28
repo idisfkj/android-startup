@@ -10,9 +10,9 @@ import com.rousetime.android_startup.Startup
  */
 class SampleFourthStartup : AndroidStartup<Any>() {
 
-    override fun isOnMainThread(): Boolean = false
+    override fun callCreateOnMainThread(): Boolean = false
 
-    override fun isNeedWait(): Boolean = true
+    override fun waitOnMainThread(): Boolean = false
 
     override fun create(context: Context): Any {
         Thread.sleep(100)

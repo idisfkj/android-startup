@@ -38,7 +38,7 @@ class StartupManager private constructor(
 
             fun addStartup(startup: AndroidStartup<*>) = apply {
                 mStartupList.add(startup)
-                if (startup.isNeedWait() && !startup.isOnMainThread()) {
+                if (startup.waitOnMainThread() && !startup.callCreateOnMainThread()) {
                     mNeedAwaitCount.incrementAndGet()
                 }
             }
@@ -113,17 +113,22 @@ class StartupManager private constructor(
 
                     StartupLogUtils.d("notifyChildren => parent ${dependencyParent::class.java.simpleName} to notify children ${it.simpleName}")
                 }
-                if (dependencyParent.isNeedWait()) {
+
+                StartupLogUtils.d("Startup ${dependencyParent::class.java.simpleName} was completed.")
+
+                if (dependencyParent.waitOnMainThread()) {
                     needAwaitCount.incrementAndGet()
                     mAwaitCountDownLatch?.countDown()
                 }
-
-                StartupLogUtils.d("Startup ${dependencyParent::class.java.simpleName} was completed.")
             }
 
         }
     }
 
+    /**
+     * to await startup completed
+     * block main thread.
+     */
     fun await() {
         if (mAwaitCountDownLatch == null) {
             throw RuntimeException("must be call start method before call await method.")
@@ -132,7 +137,7 @@ class StartupManager private constructor(
         try {
             mAwaitCountDownLatch?.await(AWAIT_TIMEOUT, TimeUnit.MILLISECONDS)
 
-            StartupLogUtils.d("totalTime: ${(System.nanoTime() - mStartTime) / 1000L / 1000L / 1000L}")
+            StartupLogUtils.d("mainThread cost totalTime: ${(System.nanoTime() - mStartTime) / 1000L / 1000L}")
         } catch (e: InterruptedException) {
             e.printStackTrace()
         }
