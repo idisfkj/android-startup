@@ -20,6 +20,7 @@ class StartupManager private constructor(
     private val context: Context,
     private val startupList: List<AndroidStartup<*>>,
     private val needAwaitCount: AtomicInteger,
+    private val awaitTimeout: Long,
     loggerLevel: LoggerLevel
 ) {
 
@@ -35,6 +36,7 @@ class StartupManager private constructor(
             private var mStartupList = mutableListOf<AndroidStartup<*>>()
             private var mNeedAwaitCount = AtomicInteger()
             private var mLoggerLevel = LoggerLevel.NONE
+            private var mAwaitTimeout = AWAIT_TIMEOUT
 
             fun addStartup(startup: AndroidStartup<*>) = apply {
                 mStartupList.add(startup)
@@ -47,11 +49,16 @@ class StartupManager private constructor(
                 mLoggerLevel = level
             }
 
+            fun setAwaitTimeout(timeoutMilliSeconds: Long) = apply {
+                mAwaitTimeout = timeoutMilliSeconds
+            }
+
             fun build(context: Context): StartupManager {
                 return StartupManager(
                     context,
                     mStartupList,
                     mNeedAwaitCount,
+                    mAwaitTimeout,
                     mLoggerLevel
                 )
             }
@@ -107,14 +114,15 @@ class StartupManager private constructor(
     private val mDefaultManagerDispatcher by lazy {
         object : ManagerDispatcher {
 
-            override fun notifyChildren(dependencyParent: Startup<*>, sortStore: StartupSortStore) {
+            override fun notifyChildren(dependencyParent: Startup<*>, result: Any?, sortStore: StartupSortStore) {
                 sortStore.clazzChildrenMap[dependencyParent::class.java]?.forEach {
-                    sortStore.clazzMap[it]?.toNotify()
+                    sortStore.clazzMap[it]?.run {
+                        toNotify()
+                        onDependenciesCompleted(dependencyParent, result)
+                    }
 
                     StartupLogUtils.d("notifyChildren => parent ${dependencyParent::class.java.simpleName} to notify children ${it.simpleName}")
                 }
-
-                StartupLogUtils.d("Startup ${dependencyParent::class.java.simpleName} was completed.")
 
                 if (dependencyParent.waitOnMainThread()) {
                     needAwaitCount.incrementAndGet()
@@ -135,7 +143,7 @@ class StartupManager private constructor(
         }
 
         try {
-            mAwaitCountDownLatch?.await(AWAIT_TIMEOUT, TimeUnit.MILLISECONDS)
+            mAwaitCountDownLatch?.await(awaitTimeout, TimeUnit.MILLISECONDS)
 
             StartupLogUtils.d("mainThread cost totalTime: ${(System.nanoTime() - mStartTime) / 1000L / 1000L}")
         } catch (e: InterruptedException) {

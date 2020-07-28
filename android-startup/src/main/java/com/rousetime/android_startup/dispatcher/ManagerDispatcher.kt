@@ -9,5 +9,5 @@ import com.rousetime.android_startup.model.StartupSortStore
  */
 interface ManagerDispatcher {
 
-    fun notifyChildren(dependencyParent: Startup<*>, sortStore: StartupSortStore)
+    fun notifyChildren(dependencyParent: Startup<*>, result: Any?, sortStore: StartupSortStore)
 }

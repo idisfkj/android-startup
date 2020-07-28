@@ -14,4 +14,6 @@ interface Startup<T> : Dispatcher, StartupExecutor {
 
     fun dependencies(): List<Class<out Startup<*>>>?
 
+    fun onDependenciesCompleted(startup: Startup<*>, result: Any?)
+
 }

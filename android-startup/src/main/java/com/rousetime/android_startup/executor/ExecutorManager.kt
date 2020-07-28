@@ -1,5 +1,7 @@
 package com.rousetime.android_startup.executor
 
+import android.os.Handler
+import android.os.Looper
 import java.util.concurrent.*
 import kotlin.math.max
 import kotlin.math.min
@@ -14,6 +16,9 @@ class ExecutorManager {
         private set
 
     var ioExecutor: ExecutorService
+        private set
+
+    var mainExecutor: Executor
         private set
 
     private val handler = RejectedExecutionHandler { _, _ -> Executors.newCachedThreadPool(Executors.defaultThreadFactory()) }
@@ -41,6 +46,15 @@ class ExecutorManager {
         ).apply {
             allowCoreThreadTimeOut(true)
         }
+
         ioExecutor = Executors.newCachedThreadPool(Executors.defaultThreadFactory())
+
+        mainExecutor = object : Executor {
+            private val handler = Handler(Looper.getMainLooper())
+
+            override fun execute(command: Runnable) {
+                handler.post(command)
+            }
+        }
     }
 }

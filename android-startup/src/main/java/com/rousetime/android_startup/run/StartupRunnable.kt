@@ -4,6 +4,7 @@ import android.content.Context
 import com.rousetime.android_startup.Startup
 import com.rousetime.android_startup.dispatcher.ManagerDispatcher
 import com.rousetime.android_startup.model.StartupSortStore
+import com.rousetime.android_startup.utils.StartupLogUtils
 
 /**
  * Created by idisfkj on 2020/7/27.
@@ -18,8 +19,10 @@ class StartupRunnable(
 
     override fun run() {
         startup.toWait()
-        startup.create(context)
+        val result = startup.create(context)
+        StartupLogUtils.d("Startup ${startup::class.java.simpleName} was completed.")
+
         startup.toNotify()
-        dispatcher.notifyChildren(startup, sortStore)
+        dispatcher.notifyChildren(startup, result, sortStore)
     }
 }

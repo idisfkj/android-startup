@@ -30,4 +30,6 @@ abstract class AndroidStartup<T> : Startup<T> {
         return null
     }
 
+    override fun onDependenciesCompleted(startup: Startup<*>, result: Any?) {}
+
 }

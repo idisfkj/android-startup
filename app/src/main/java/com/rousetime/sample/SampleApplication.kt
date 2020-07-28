@@ -2,7 +2,6 @@ package com.rousetime.sample
 
 import android.app.Application
 import com.rousetime.android_startup.StartupManager
-import com.rousetime.android_startup.executor.ExecutorManager
 import com.rousetime.android_startup.model.LoggerLevel
 import com.rousetime.sample.startup.SampleFirstStartup
 import com.rousetime.sample.startup.SampleFourthStartup
@@ -18,10 +17,11 @@ class SampleApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         StartupManager.Companion.Builder()
+            .setAwaitTimeout(1200)
             .setLoggerLevel(LoggerLevel.DEBUG)
+            .addStartup(SampleFirstStartup())
             .addStartup(SampleSecondStartup())
             .addStartup(SampleThirdStartup())
-            .addStartup(SampleFirstStartup())
             .addStartup(SampleFourthStartup())
             .build(this)
             .start()
