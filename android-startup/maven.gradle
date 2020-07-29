@@ -1,0 +1,21 @@
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'android-startup'
+    publishedGroupId = 'com.rousetime.android'
+    libraryName = 'android-startup'
+    artifact = 'android-startup'
+    libraryDescription = 'The Android Startup library provides a straightforward, performant way to initialize components at application startup. Both library developers and app developers can use Android Startup to streamline startup sequences and explicitly set the order of initialization'
+    siteUrl = 'https://github.com/idisfkj/android-startup'
+    gitUrl = 'https://github.com/idisfkj/android-startup.git'
+    libraryVersion = '1.0.0'
+    developerId = 'idisfkj'
+    developerName = 'idisfkj'
+    developerEmail = 'idisfkj@gmail.com'
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
+apply from: 'install.gradle'
+apply from: 'bintray.gradle'
+
