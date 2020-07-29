@@ -10,7 +10,7 @@ import com.rousetime.android_startup.executor.StartupExecutor
  */
 interface Startup<T> : Dispatcher, StartupExecutor {
 
-    fun create(context: Context): T
+    fun create(context: Context): T?
 
     fun dependencies(): List<Class<out Startup<*>>>?
 

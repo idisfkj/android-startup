@@ -14,9 +14,9 @@ class SampleFourthStartup : AndroidStartup<Any>() {
 
     override fun waitOnMainThread(): Boolean = false
 
-    override fun create(context: Context): Any {
+    override fun create(context: Context): Any? {
         Thread.sleep(100)
-        return Any()
+        return null
     }
 
     override fun dependencies(): List<Class<out Startup<*>>>? {

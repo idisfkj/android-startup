@@ -7,7 +7,7 @@ import com.rousetime.android_startup.model.LoggerLevel
  * Created by idisfkj on 2020/7/24.
  * Email: idisfkj@gmail.com.
  */
-object StartupLogUtils {
+internal object StartupLogUtils {
 
     private const val TAG = "StartupTrack"
     var level: LoggerLevel = LoggerLevel.NONE

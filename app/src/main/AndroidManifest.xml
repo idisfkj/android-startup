@@ -17,6 +17,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name="com.rousetime.android_startup.provider.StartupProvider"
+            android:authorities="${applicationId}.android_startup"
+            android:exported="false">
+
+            <meta-data
+                android:name="com.rousetime.sample.startup.SampleStartupProviderConfig"
+                android:value="android.startup.provider.config" />
+
+            <meta-data
+                android:name="com.rousetime.sample.startup.SampleFourthStartup"
+                android:value="android.startup" />
+
+        </provider>
+
     </application>
 
 </manifest>

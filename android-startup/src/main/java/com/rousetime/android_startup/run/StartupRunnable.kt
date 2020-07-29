@@ -10,7 +10,7 @@ import com.rousetime.android_startup.utils.StartupLogUtils
  * Created by idisfkj on 2020/7/27.
  * Email: idisfkj@gmail.com.
  */
-class StartupRunnable(
+internal class StartupRunnable(
     private val context: Context,
     private val startup: Startup<*>,
     private val sortStore: StartupSortStore,

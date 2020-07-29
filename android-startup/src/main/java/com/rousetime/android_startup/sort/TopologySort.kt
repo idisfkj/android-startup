@@ -11,7 +11,7 @@ import java.util.*
  * Created by idisfkj on 2020/7/24.
  * Email: idisfkj@gmail.com.
  */
-object TopologySort {
+internal object TopologySort {
 
     fun sort(startupList: List<AndroidStartup<*>>): StartupSortStore {
 

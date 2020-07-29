@@ -1,10 +1,10 @@
 package com.rousetime.sample.startup
 
 import android.content.Context
+import android.util.Log
 import com.rousetime.android_startup.AndroidStartup
 import com.rousetime.android_startup.Startup
 import com.rousetime.android_startup.executor.ExecutorManager
-import com.rousetime.android_startup.utils.StartupLogUtils
 import java.util.concurrent.Executor
 
 /**
@@ -31,6 +31,6 @@ class SampleSecondStartup : AndroidStartup<Boolean>() {
     }
 
     override fun onDependenciesCompleted(startup: Startup<*>, result: Any?) {
-        StartupLogUtils.d("onDependenciesCompleted: ${startup::class.java.simpleName}, $result")
+        Log.d("SampleSecondStartup", "onDependenciesCompleted: ${startup::class.java.simpleName}, $result")
     }
 }

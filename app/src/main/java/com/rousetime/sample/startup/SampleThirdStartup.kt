@@ -1,9 +1,9 @@
 package com.rousetime.sample.startup
 
 import android.content.Context
+import android.util.Log
 import com.rousetime.android_startup.AndroidStartup
 import com.rousetime.android_startup.Startup
-import com.rousetime.android_startup.utils.StartupLogUtils
 
 /**
  * Created by idisfkj on 2020/7/24.
@@ -15,7 +15,7 @@ class SampleThirdStartup : AndroidStartup<Long>() {
 
     override fun waitOnMainThread(): Boolean = false
 
-    override fun create(context: Context): Long {
+    override fun create(context: Context): Long? {
         Thread.sleep(3000)
         return 10L
     }
@@ -28,6 +28,6 @@ class SampleThirdStartup : AndroidStartup<Long>() {
     }
 
     override fun onDependenciesCompleted(startup: Startup<*>, result: Any?) {
-        StartupLogUtils.d("onDependenciesCompleted: ${startup::class.java.simpleName}, $result")
+        Log.d("SampleThirdStartup", "onDependenciesCompleted: ${startup::class.java.simpleName}, $result")
     }
 }

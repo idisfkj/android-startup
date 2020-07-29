@@ -16,15 +16,15 @@ class SampleApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        StartupManager.Builder()
-            .setAwaitTimeout(12000)
-            .setLoggerLevel(LoggerLevel.DEBUG)
-            .addStartup(SampleFirstStartup())
-            .addStartup(SampleSecondStartup())
-            .addStartup(SampleThirdStartup())
-            .addStartup(SampleFourthStartup())
-            .build(this)
-            .start()
-            .await()
+//        StartupManager.Builder()
+//            .setAwaitTimeout(12000)
+//            .setLoggerLevel(LoggerLevel.DEBUG)
+//            .addStartup(SampleFirstStartup())
+//            .addStartup(SampleSecondStartup())
+//            .addStartup(SampleThirdStartup())
+//            .addStartup(SampleFourthStartup())
+//            .build(this)
+//            .start()
+//            .await()
     }
 }

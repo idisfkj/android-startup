@@ -13,7 +13,7 @@ class SampleFirstStartup : AndroidStartup<String>() {
 
     override fun waitOnMainThread(): Boolean = false
 
-    override fun create(context: Context): String {
+    override fun create(context: Context): String? {
         return this.javaClass.simpleName
     }
 
