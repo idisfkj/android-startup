@@ -22,7 +22,6 @@ internal class StartupRunnable(
         val result = startup.create(context)
         StartupLogUtils.d("Startup ${startup::class.java.simpleName} was completed.")
 
-        startup.toNotify()
         dispatcher.notifyChildren(startup, result, sortStore)
     }
 }
