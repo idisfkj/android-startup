@@ -8,9 +8,11 @@ Add the following dependency to your `build.gradle` file:
 
 ```
 dependencies {
-    implementation 'com.rousetime.android:android-startup:1.0.0'
+    implementation 'com.rousetime.android:android-startup:1.0.1'
 }
 ```
+
+> Versions update information [Release](https://github.com/idisfkj/android-startup/releases)
 
 # Quick Usage
 There are tow ways of using android-startup in your project.
