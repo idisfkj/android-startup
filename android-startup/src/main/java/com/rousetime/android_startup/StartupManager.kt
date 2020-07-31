@@ -130,18 +130,19 @@ class StartupManager private constructor(
         object : ManagerDispatcher {
 
             override fun notifyChildren(dependencyParent: Startup<*>, result: Any?, sortStore: StartupSortStore) {
-                sortStore.clazzChildrenMap[dependencyParent::class.java]?.forEach {
-                    sortStore.clazzMap[it]?.run {
-                        toNotify()
-                        onDependenciesCompleted(dependencyParent, result)
-                    }
-
-                    StartupLogUtils.d("notifyChildren => parent ${dependencyParent::class.java.simpleName} to notify children ${it.simpleName}")
-                }
-
+                // immediately notify main thread,Unblock the main thread.
                 if (dependencyParent.waitOnMainThread()) {
                     needAwaitCount.incrementAndGet()
                     mAwaitCountDownLatch?.countDown()
+                }
+
+                sortStore.clazzChildrenMap[dependencyParent::class.java]?.forEach {
+                    StartupLogUtils.d("notifyChildren => parent ${dependencyParent::class.java.simpleName} to notify children ${it.simpleName}")
+
+                    sortStore.clazzMap[it]?.run {
+                        onDependenciesCompleted(dependencyParent, result)
+                        toNotify()
+                    }
                 }
             }
 
