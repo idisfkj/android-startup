@@ -147,9 +147,11 @@ To use these config, you must define a class than implements the `StartupProvide
 ```
 class SampleStartupProviderConfig : StartupProviderConfig {
 
-    override fun getLoggerLevel(): LoggerLevel = LoggerLevel.DEBUG
-
-    override fun getAwaitTimeout(): Long = 12000L
+    override fun getConfig(): StartupConfig =
+        StartupConfig.Builder()
+            .setLoggerLevel(LoggerLevel.DEBUG)
+            .setAwaitTimeout(12000L)
+            .build()
 }
 ```
 At the same time, you need add `StartupProviderConfig` to manifest file:
@@ -173,14 +175,19 @@ To use these config,you need use `StartupManager.Builder()` in application.
 
 ```
 override fun onCreate() {
-  super.onCreate()
-  StartupManager.Builder()
-      .setAwaitTimeout(12000)
-      .setLoggerLevel(LoggerLevel.DEBUG)
-      ...
-      .build(this)
-      .start()
-      .await()
+    super.onCreate()
+
+    val config = StartupConfig.Builder()
+        .setLoggerLevel(LoggerLevel.DEBUG)
+        .setAwaitTimeout(12000L)
+        .build()
+
+    StartupManager.Builder()
+        .setConfig(config)
+        ...
+        .build(this)
+        .start()
+        .await()
 }
 ```
 
