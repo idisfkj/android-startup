@@ -12,6 +12,7 @@ import com.rousetime.android_startup.Startup
 import com.rousetime.android_startup.StartupManager
 import com.rousetime.android_startup.execption.StartupException
 import com.rousetime.android_startup.model.LoggerLevel
+import com.rousetime.android_startup.model.StartupConfig
 import com.rousetime.android_startup.model.StartupProviderStore
 
 /**
@@ -24,8 +25,9 @@ class StartupProvider : ContentProvider() {
         context.takeIf { context -> context != null }?.let {
             val store = discoverAndInitialize()
             StartupManager.Builder()
-                .setAwaitTimeout(store.config?.getAwaitTimeout() ?: StartupManager.AWAIT_TIMEOUT)
-                .setLoggerLevel(store.config?.getLoggerLevel() ?: LoggerLevel.NONE)
+                .setConfig(store.config?.getConfig()?: StartupConfig.Builder().build())
+//                .setAwaitTimeout(store.config?.getAwaitTimeout() ?: StartupManager.AWAIT_TIMEOUT)
+//                .setLoggerLevel(store.config?.getLoggerLevel() ?: LoggerLevel.NONE)
                 .addAllStartup(store.result)
                 .build(it)
                 .start()
@@ -72,11 +74,11 @@ class StartupProvider : ContentProvider() {
                         val clazz = Class.forName(key)
                         if (startup == value) {
                             if (AndroidStartup::class.java.isAssignableFrom(clazz)) {
-                                doInitialize((clazz.getConstructor().newInstance() as AndroidStartup<*>), result, initialize, initialized)
+                                doInitialize((clazz.getDeclaredConstructor().newInstance() as AndroidStartup<*>), result, initialize, initialized)
                             }
                         } else if (providerConfig == value) {
                             if (StartupProviderConfig::class.java.isAssignableFrom(clazz)) {
-                                config = clazz.getConstructor().newInstance() as StartupProviderConfig?
+                                config = clazz.getDeclaredConstructor().newInstance() as StartupProviderConfig?
                             }
                         }
                     }
@@ -102,7 +104,7 @@ class StartupProvider : ContentProvider() {
                 initialize.add(startup::class.java)
                 result.add(startup)
                 startup.dependencies()?.forEach {
-                    doInitialize(it.getConstructor().newInstance() as AndroidStartup<*>, result, initialize, initialized)
+                    doInitialize(it.getDeclaredConstructor().newInstance() as AndroidStartup<*>, result, initialize, initialized)
                 }
                 initialize.remove(startup::class.java)
                 initialized.add(startup::class.java)

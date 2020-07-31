@@ -5,6 +5,7 @@ import android.os.Looper
 import com.rousetime.android_startup.dispatcher.ManagerDispatcher
 import com.rousetime.android_startup.execption.StartupException
 import com.rousetime.android_startup.model.LoggerLevel
+import com.rousetime.android_startup.model.StartupConfig
 import com.rousetime.android_startup.model.StartupSortStore
 import com.rousetime.android_startup.run.StartupRunnable
 import com.rousetime.android_startup.sort.TopologySort
@@ -21,8 +22,7 @@ class StartupManager private constructor(
     private val context: Context,
     private val startupList: List<AndroidStartup<*>>,
     private val needAwaitCount: AtomicInteger,
-    private val awaitTimeout: Long,
-    loggerLevel: LoggerLevel
+    private val config: StartupConfig
 ) {
 
     private var mAwaitCountDownLatch: CountDownLatch? = null
@@ -38,6 +38,7 @@ class StartupManager private constructor(
         private var mNeedAwaitCount = AtomicInteger()
         private var mLoggerLevel = LoggerLevel.NONE
         private var mAwaitTimeout = AWAIT_TIMEOUT
+        private var mConfig: StartupConfig? = null
 
         fun addStartup(startup: AndroidStartup<*>) = apply {
             mStartupList.add(startup)
@@ -52,10 +53,16 @@ class StartupManager private constructor(
             }
         }
 
+        fun setConfig(config: StartupConfig) = apply {
+            mConfig = config
+        }
+
+        @Deprecated("Use setConfig() instead.")
         fun setLoggerLevel(level: LoggerLevel) = apply {
             mLoggerLevel = level
         }
 
+        @Deprecated("Use setConfig() instead.")
         fun setAwaitTimeout(timeoutMilliSeconds: Long) = apply {
             mAwaitTimeout = timeoutMilliSeconds
         }
@@ -65,14 +72,16 @@ class StartupManager private constructor(
                 context,
                 mStartupList,
                 mNeedAwaitCount,
-                mAwaitTimeout,
-                mLoggerLevel
+                mConfig ?: StartupConfig.Builder()
+                    .setLoggerLevel(mLoggerLevel)
+                    .setAwaitTimeout(mAwaitTimeout)
+                    .build()
             )
         }
     }
 
     init {
-        StartupLogUtils.level = loggerLevel
+        StartupLogUtils.level = config.loggerLevel
     }
 
     fun start() = apply {
@@ -149,7 +158,7 @@ class StartupManager private constructor(
         }
 
         try {
-            mAwaitCountDownLatch?.await(awaitTimeout, TimeUnit.MILLISECONDS)
+            mAwaitCountDownLatch?.await(config.awaitTimeout, TimeUnit.MILLISECONDS)
 
             StartupLogUtils.d("mainThread cost totalTime: ${(System.nanoTime() - mStartTime) / 1000L / 1000L}")
         } catch (e: InterruptedException) {
