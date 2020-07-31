@@ -82,16 +82,23 @@ internal object TopologySort {
 
     private fun printResult(result: List<AndroidStartup<*>>) {
         val printBuilder = buildString {
-            result.forEach {
-                this.append("\n")
-                    .append("Class: ${it::class.java.simpleName}")
-                    .append(" =>")
-                    .append(" Dependencies size: ${it.dependencies()?.size ?: 0}")
-                    .append(" MainThread: ${it.callCreateOnMainThread()}")
-                    .append(" NeedWait: ${it.waitOnMainThread()}")
-                    .append("\n")
+            append("TopologySort result: ")
+            append("\n")
+            append("================================================ ordering start ================================================")
+            result.forEachIndexed { index, it ->
+                append("\n")
+                append("order [$index] ")
+                append("Class: ${it::class.java.simpleName}")
+                append(" =>")
+                append(" Dependencies size: ${it.dependencies()?.size ?: 0}")
+                append(" =>")
+                append(" callCreateOnMainThread: ${it.callCreateOnMainThread()}")
+                append(" =>")
+                append(" waitOnMainThread: ${it.waitOnMainThread()}")
             }
+            append("\n")
+            append("================================================ ordering end ================================================")
         }
-        StartupLogUtils.d("TopologySort result: $printBuilder")
+        StartupLogUtils.d(printBuilder)
     }
 }

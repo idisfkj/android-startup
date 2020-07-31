@@ -19,6 +19,7 @@ internal class StartupRunnable(
 
     override fun run() {
         startup.toWait()
+        StartupLogUtils.d("Startup ${startup::class.java.simpleName} being create.")
         val result = startup.create(context)
         StartupLogUtils.d("Startup ${startup::class.java.simpleName} was completed.")
 
