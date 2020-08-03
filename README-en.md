@@ -31,13 +31,13 @@ There are tow ways of using android-startup in your project,need to be initializ
 You define each component initializer by creating a class that implements the `AndroidStartup<T>` abstract.
 This abstract implements the `Startup<T>` interface. And this abstract defines four important methods:
 
-* The `callCreateOnMainThread()`method,which control the `create()`method is in the main thread calls.Othrewise in the other thread.
+* The `callCreateOnMainThread(): Boolean`method,which control the `create()`method is in the main thread calls.Othrewise in the other thread.
 
-* The `waitOnMainThread()`method,which control the current component should call waiting in the main thread.If returns true, will block the main thread.
+* The `waitOnMainThread(): Boolean`method,which control the current component should call waiting in the main thread.If returns true, will block the main thread.
 
-* The `create()`method,which contains all of the necessary operations to initialize the component and returns an instance of `T`
+* The `create(): T?`method,which contains all of the necessary operations to initialize the component and returns an instance of `T`
 
-* The `dependencies()`method,which returns a list of the other `Startup<T>` objects that the initializer depends on.
+* The `dependencies(): List<Class<out Startup<*>>>?`method,which returns a list of the other `Startup<*>` objects that the initializer depends on.
 
 For example, Define a `SampleFirstStartup` class that implements `AndroidStartup<String>`:
 
@@ -90,15 +90,7 @@ For example, you also define a [SampleThirdStartup](https://github.com/idisfkj/a
 The first one is automatic initializes startup in manifest.
 
 Android Startup includes a special content provider called `StartupProvider` that it uses to discover and call your component startup.
-Android Startup discovers component startup by first checking for a `<meta-data>` entry under the `StartupProvider` manifest entry. Then, Android Startup calls the `dependencies()` methods for any startup that it has already discovered.
-
-This means that in order for a component startup to be discoverable by Android Startup, one of the following conditions must be met:
-
-* The component startup has a corresponding `<meta-data>` entry under the `StartupProvider` manifest entry.
-
-* The component startup is listed in the `dependencies()` method from an startup that is already discoverable.
-
-Consider again the example,to make sure Android Startup can discover these startup, add the following to the manifest file:
+In order for it to automatically identify, need in `StartupProvider` defined in the `<meta-data>` label.The `name` as defined by the component class, `value` values corresponding to the `android.startup`.
 
 ```
 <provider
@@ -141,7 +133,7 @@ You can check out the sample [app](https://github.com/idisfkj/android-startup/tr
 
 # More
 
-## Config
+## Optional Config
 
 * `LoggerLevel`: control Android Startup log level, include `LoggerLevel.NONE`, `LoggerLevel.ERROR` and `LoggerLevel.DEBUG`.
 
