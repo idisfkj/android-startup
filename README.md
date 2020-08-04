@@ -12,6 +12,19 @@
 Android Startup提供一种在应用启动时能够更加简单、高效的方式来初始化组件。开发人员可以使用Android Startup来简化启动序列，并显式地设置初始化顺序与组件之间的依赖关系。
 与此同时，Android Startup支持**同步与异步等待**，并通过有向无环图[拓扑排序](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/sort/TopologySort.kt)的方式来保证内部依赖组件的初始化顺序。
 
+下面是一张与google的[App Startup](https://developer.android.com/topic/libraries/app-startup)功能对比的表格。
+
+|指标|App Startup|Android Startup|
+|:---:|:------:| :------:|
+|手动配置| ✅ | ✅ |
+|自动配置| ✅ | ✅ |
+|依赖支持| ✅ | ✅ |
+|闭环处理| ✅ | ✅ |
+|线程控制| ❌ | ✅ |
+|异步等待| ❌ | ✅ |
+|依赖回调| ❌ | ✅ |
+|拓扑优化| ❌ | ✅ |
+
 # 添加依赖
 将下面的依赖添加到`build.gradle`文件中:
 

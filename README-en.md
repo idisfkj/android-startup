@@ -13,6 +13,19 @@ The Android Startup library provides a straightforward, performant way to initia
 
 At the same time, the Android Startup support **async await and sync await**. And [topological ordering](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/sort/TopologySort.kt) is used to ensure the initialization order of dependent components.
 
+Here is a piece of with Google [App Startup](https://developer.android.com/topic/libraries/app-startup) feature comparison table.
+
+|indicator|App Startup|Android Startup|
+|:---:|:------:| :------:|
+|Manually Config| ✅ | ✅ |
+|Automatic Config| ✅ | ✅ |
+|Support Dependencies| ✅ | ✅ |
+|Handle Circle| ✅ | ✅ |
+|Thread Of Control| ❌ | ✅ |
+|Async await| ❌ | ✅ |
+|Callback Dependencies| ❌ | ✅ |
+|Topology optimization| ❌ | ✅ |
+
 # Setup
 Add the following dependency to your `build.gradle` file:
 
