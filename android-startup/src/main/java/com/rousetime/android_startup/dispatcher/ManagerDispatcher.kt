@@ -1,5 +1,6 @@
 package com.rousetime.android_startup.dispatcher
 
+import com.rousetime.android_startup.AndroidStartup
 import com.rousetime.android_startup.Startup
 import com.rousetime.android_startup.model.StartupSortStore
 
@@ -9,5 +10,13 @@ import com.rousetime.android_startup.model.StartupSortStore
  */
 interface ManagerDispatcher {
 
+    /**
+     * dispatch startup to executing.
+     */
+    fun dispatch(startup: AndroidStartup<*>, sortStore: StartupSortStore, mainThread: Boolean)
+
+    /**
+     * notify children when dependency startup completed.
+     */
     fun notifyChildren(dependencyParent: Startup<*>, result: Any?, sortStore: StartupSortStore)
 }

@@ -81,6 +81,8 @@ class StartupManager private constructor(
     }
 
     init {
+        // save initialized config
+        StartupInitializer.instance.saveConfig(config)
         StartupLogUtils.level = config.loggerLevel
     }
 
@@ -105,22 +107,11 @@ class StartupManager private constructor(
     }
 
     private fun execute(sortStore: StartupSortStore) {
-
         StartupLogUtils.d("execute start: size of ${sortStore.mainSortResult.size + sortStore.ioSortResult.size}")
 
-        sortStore.ioSortResult.forEach {
+        sortStore.ioSortResult.forEach { mDefaultManagerDispatcher.dispatch(it, sortStore, false) }
 
-            StartupLogUtils.d("IOThread Startup ${it::class.java.simpleName} being executing.")
-
-            it.createExecutor().execute(StartupRunnable(context, it, sortStore, mDefaultManagerDispatcher))
-        }
-
-        sortStore.mainSortResult.forEach {
-
-            StartupLogUtils.d("MainThread Startup ${it::class.java.simpleName} being executing.")
-
-            StartupRunnable(context, it, sortStore, mDefaultManagerDispatcher).run()
-        }
+        sortStore.mainSortResult.forEach { mDefaultManagerDispatcher.dispatch(it, sortStore, true) }
     }
 
     /**
@@ -128,6 +119,22 @@ class StartupManager private constructor(
      */
     private val mDefaultManagerDispatcher by lazy {
         object : ManagerDispatcher {
+
+            override fun dispatch(startup: AndroidStartup<*>, sortStore: StartupSortStore, mainThread: Boolean) {
+                StartupLogUtils.d("${startup::class.java.simpleName} being executing, onMainThread $mainThread.")
+                if (StartupInitializer.instance.hadInitialized(startup::class.java)) {
+                    val result = StartupInitializer.instance.obtainInitializedResult<Any>(startup::class.java)
+                    StartupLogUtils.d("Startup ${startup::class.java.simpleName} was completed, result from cache.")
+                    notifyChildren(startup, result, sortStore)
+                } else {
+                    val runnable = StartupRunnable(context, startup, sortStore, this)
+                    if (!mainThread) {
+                        startup.createExecutor().execute(runnable)
+                    } else {
+                        runnable.run()
+                    }
+                }
+            }
 
             override fun notifyChildren(dependencyParent: Startup<*>, result: Any?, sortStore: StartupSortStore) {
                 // immediately notify main thread,Unblock the main thread.

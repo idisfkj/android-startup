@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
 import com.rousetime.android_startup.execption.StartupException
+import com.rousetime.android_startup.model.StartupConfig
 import com.rousetime.android_startup.model.StartupProviderStore
 import com.rousetime.android_startup.provider.StartupProvider
 import com.rousetime.android_startup.provider.StartupProviderConfig
@@ -13,6 +14,12 @@ import com.rousetime.android_startup.provider.StartupProviderConfig
  * Email: idisfkj@gmail.com.
  */
 class StartupInitializer {
+
+    /**
+     * Save initialized components result.
+     */
+    private val mInitializedComponents = mutableMapOf<Class<out Startup<*>>, Any?>()
+    private var mInitializedConfig: StartupConfig? = null
 
     companion object {
         @JvmStatic
@@ -39,7 +46,9 @@ class StartupInitializer {
                         }
                     } else if (providerConfig == value) {
                         if (StartupProviderConfig::class.java.isAssignableFrom(clazz)) {
-                            config = clazz.getDeclaredConstructor().newInstance() as StartupProviderConfig?
+                            config = clazz.getDeclaredConstructor().newInstance() as? StartupProviderConfig
+                            // save initialized config
+                            saveConfig(config?.getConfig())
                         }
                     }
                 }
@@ -72,5 +81,27 @@ class StartupInitializer {
         } catch (t: Throwable) {
             throw StartupException(t)
         }
+    }
+
+    /**
+     * save result of initialized component.
+     */
+    internal fun saveInitializedComponent(zClass: Class<out Startup<*>>, result: Any?) {
+        mInitializedComponents[zClass] = result
+    }
+
+    /**
+     * check initialized.
+     */
+    fun hadInitialized(zClass: Class<out Startup<*>>): Boolean = mInitializedComponents.contains(zClass)
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T> obtainInitializedResult(zClass: Class<out Startup<*>>): T? = mInitializedComponents[zClass] as T?
+
+    /**
+     * save initialized config.
+     */
+    internal fun saveConfig(config: StartupConfig?) {
+        mInitializedConfig = config
     }
 }

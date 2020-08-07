@@ -2,6 +2,7 @@ package com.rousetime.android_startup.run
 
 import android.content.Context
 import com.rousetime.android_startup.Startup
+import com.rousetime.android_startup.StartupInitializer
 import com.rousetime.android_startup.dispatcher.ManagerDispatcher
 import com.rousetime.android_startup.model.StartupSortStore
 import com.rousetime.android_startup.utils.StartupLogUtils
@@ -21,6 +22,8 @@ internal class StartupRunnable(
         startup.toWait()
         StartupLogUtils.d("Startup ${startup::class.java.simpleName} being create.")
         val result = startup.create(context)
+        // To save result of initialized component.
+        StartupInitializer.instance.saveInitializedComponent(startup::class.java, result)
         StartupLogUtils.d("Startup ${startup::class.java.simpleName} was completed.")
 
         dispatcher.notifyChildren(startup, result, sortStore)
