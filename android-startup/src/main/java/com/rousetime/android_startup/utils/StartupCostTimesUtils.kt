@@ -10,18 +10,18 @@ import com.rousetime.android_startup.model.CostTimesModel
  */
 internal object StartupCostTimesUtils {
 
-    private val mCostTimesMap = mutableMapOf<String, CostTimesModel>()
+    val costTimesMap = mutableMapOf<String, CostTimesModel>()
 
     private const val ACCURACY = 1000 * 1000L
 
     var mainThreadTimes = 0L
 
     fun recordStart(startup: Class<out Startup<*>>, callOnMainThread: Boolean) {
-        mCostTimesMap[startup.getUniqueKey()] = CostTimesModel(startup.simpleName, callOnMainThread, System.nanoTime() / ACCURACY)
+        costTimesMap[startup.getUniqueKey()] = CostTimesModel(startup.simpleName, callOnMainThread, System.nanoTime() / ACCURACY)
     }
 
     fun recordEnd(startup: Class<out Startup<*>>) {
-        mCostTimesMap[startup.getUniqueKey()]?.let {
+        costTimesMap[startup.getUniqueKey()]?.let {
             it.endTime = System.nanoTime() / ACCURACY
         }
     }
@@ -31,7 +31,7 @@ internal object StartupCostTimesUtils {
             append("startup cost times detail:")
             append("\n")
             append("|=================================================================")
-            mCostTimesMap.values.forEach {
+            costTimesMap.values.forEach {
                 append("\n")
                 append("|      Startup Name       |   ${it.name}")
                 append("\n")

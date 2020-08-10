@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Looper
 import com.rousetime.android_startup.dispatcher.ManagerDispatcher
 import com.rousetime.android_startup.execption.StartupException
+import com.rousetime.android_startup.executor.ExecutorManager
 import com.rousetime.android_startup.model.LoggerLevel
 import com.rousetime.android_startup.model.StartupConfig
 import com.rousetime.android_startup.model.StartupSortStore
@@ -159,6 +160,11 @@ class StartupManager private constructor(
                 val size = count?.incrementAndGet() ?: 0
                 if (size == startupList.size) {
                     StartupCostTimesUtils.printAll()
+                    config.listener?.let {
+                        ExecutorManager.instance.mainExecutor.execute {
+                            it.onCompleted(StartupCostTimesUtils.mainThreadTimes, StartupCostTimesUtils.costTimesMap.values.toList())
+                        }
+                    }
                 }
             }
 
