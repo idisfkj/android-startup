@@ -9,6 +9,7 @@ import com.rousetime.android_startup.model.StartupConfig
 import com.rousetime.android_startup.model.StartupSortStore
 import com.rousetime.android_startup.run.StartupRunnable
 import com.rousetime.android_startup.sort.TopologySort
+import com.rousetime.android_startup.utils.StartupCostTimesUtils
 import com.rousetime.android_startup.utils.StartupLogUtils
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -107,11 +108,7 @@ class StartupManager private constructor(
     }
 
     private fun execute(sortStore: StartupSortStore) {
-        StartupLogUtils.d("execute start: size of ${sortStore.mainSortResult.size + sortStore.ioSortResult.size}")
-
-        sortStore.ioSortResult.forEach { mDefaultManagerDispatcher.dispatch(it, sortStore, false) }
-
-        sortStore.mainSortResult.forEach { mDefaultManagerDispatcher.dispatch(it, sortStore, true) }
+        sortStore.result.forEach { mDefaultManagerDispatcher.dispatch(it, sortStore) }
     }
 
     /**
@@ -120,15 +117,22 @@ class StartupManager private constructor(
     private val mDefaultManagerDispatcher by lazy {
         object : ManagerDispatcher {
 
-            override fun dispatch(startup: AndroidStartup<*>, sortStore: StartupSortStore, mainThread: Boolean) {
-                StartupLogUtils.d("${startup::class.java.simpleName} being executing, onMainThread $mainThread.")
+            private var count: AtomicInteger? = null
+
+            override fun dispatch(startup: AndroidStartup<*>, sortStore: StartupSortStore) {
+                count = AtomicInteger()
+
+                StartupLogUtils.d("${startup::class.java.simpleName} being dispatching, onMainThread ${startup.callCreateOnMainThread()}.")
+
                 if (StartupInitializer.instance.hadInitialized(startup::class.java)) {
                     val result = StartupInitializer.instance.obtainInitializedResult<Any>(startup::class.java)
-                    StartupLogUtils.d("Startup ${startup::class.java.simpleName} was completed, result from cache.")
+
+                    StartupLogUtils.d("${startup::class.java.simpleName} was completed, result from cache.")
+
                     notifyChildren(startup, result, sortStore)
                 } else {
                     val runnable = StartupRunnable(context, startup, sortStore, this)
-                    if (!mainThread) {
+                    if (!startup.callCreateOnMainThread()) {
                         startup.createExecutor().execute(runnable)
                     } else {
                         runnable.run()
@@ -144,12 +148,17 @@ class StartupManager private constructor(
                 }
 
                 sortStore.clazzChildrenMap[dependencyParent::class.java]?.forEach {
-                    StartupLogUtils.d("notifyChildren => parent ${dependencyParent::class.java.simpleName} to notify children ${it.simpleName}")
+
+                    StartupLogUtils.d("notifyChildren => ${dependencyParent::class.java.simpleName} to notify ${it.simpleName}")
 
                     sortStore.clazzMap[it]?.run {
                         onDependenciesCompleted(dependencyParent, result)
                         toNotify()
                     }
+                }
+                val size = count?.incrementAndGet() ?: 0
+                if (size == startupList.size) {
+                    StartupCostTimesUtils.printAll()
                 }
             }
 
@@ -168,7 +177,7 @@ class StartupManager private constructor(
         try {
             mAwaitCountDownLatch?.await(config.awaitTimeout, TimeUnit.MILLISECONDS)
 
-            StartupLogUtils.d("mainThread cost totalTime: ${(System.nanoTime() - mStartTime) / 1000L / 1000L}")
+            StartupCostTimesUtils.mainThreadTimes = System.nanoTime() - mStartTime
         } catch (e: InterruptedException) {
             e.printStackTrace()
         }

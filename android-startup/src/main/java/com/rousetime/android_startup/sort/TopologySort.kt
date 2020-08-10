@@ -64,17 +64,17 @@ internal object TopologySort {
         }
 
         if (mainResult.size + ioResult.size != startupList.size) {
-            throw StartupException("have circle dependencies.")
+            throw StartupException("lack of dependencies or have circle dependencies.")
         }
 
-        printResult(mutableListOf<AndroidStartup<*>>().apply {
-            addAll(mainResult)
+        val result = mutableListOf<AndroidStartup<*>>().apply {
             addAll(ioResult)
-        })
+            addAll(mainResult)
+        }
+        printResult(result)
 
         return StartupSortStore(
-            mainResult,
-            ioResult,
+            result,
             clazzMap,
             clazzChildrenMap
         )
@@ -84,20 +84,29 @@ internal object TopologySort {
         val printBuilder = buildString {
             append("TopologySort result: ")
             append("\n")
-            append("================================================ ordering start ================================================")
+            append("|================================================================")
             result.forEachIndexed { index, it ->
                 append("\n")
-                append("order [$index] ")
-                append("Class: ${it::class.java.simpleName}")
-                append(" =>")
-                append(" Dependencies size: ${it.dependencies()?.size ?: 0}")
-                append(" =>")
-                append(" callCreateOnMainThread: ${it.callCreateOnMainThread()}")
-                append(" =>")
-                append(" waitOnMainThread: ${it.waitOnMainThread()}")
+                append("|         order          |    [$index] ")
+                append("\n")
+                append("|----------------------------------------------------------------")
+                append("\n")
+                append("|        Startup         |    ${it::class.java.simpleName}")
+                append("\n")
+                append("|----------------------------------------------------------------")
+                append("\n")
+                append("|   Dependencies size    |    ${it.dependencies()?.size ?: 0}")
+                append("\n")
+                append("|----------------------------------------------------------------")
+                append("\n")
+                append("| callCreateOnMainThread |    ${it.callCreateOnMainThread()}")
+                append("\n")
+                append("|----------------------------------------------------------------")
+                append("\n")
+                append("|    waitOnMainThread    |    ${it.waitOnMainThread()}")
+                append("\n")
+                append("|================================================================")
             }
-            append("\n")
-            append("================================================ ordering end ================================================")
         }
         StartupLogUtils.d(printBuilder)
     }

@@ -8,8 +8,7 @@ import com.rousetime.android_startup.Startup
  * Email: idisfkj@gmail.com.
  */
 data class StartupSortStore(
-    val mainSortResult: MutableList<AndroidStartup<*>>,
-    val ioSortResult: MutableList<AndroidStartup<*>>,
+    val result: MutableList<AndroidStartup<*>>,
     val clazzMap: Map<Class<out Startup<*>>, AndroidStartup<*>>,
     val clazzChildrenMap: Map<Class<out Startup<*>>, MutableList<Class<out Startup<*>>>>
 )

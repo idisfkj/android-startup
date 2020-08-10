@@ -13,7 +13,7 @@ interface ManagerDispatcher {
     /**
      * dispatch startup to executing.
      */
-    fun dispatch(startup: AndroidStartup<*>, sortStore: StartupSortStore, mainThread: Boolean)
+    fun dispatch(startup: AndroidStartup<*>, sortStore: StartupSortStore)
 
     /**
      * notify children when dependency startup completed.
