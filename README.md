@@ -37,6 +37,9 @@ dependencies {
 > 依赖版本的更新信息: [Release](https://github.com/idisfkj/android-startup/releases)
 
 # 快速使用
+
+![](https://github.com/idisfkj/android-startup/raw/master/images/android_startup_diagram.png)
+
 android-startup提供了两种使用方式，在使用之前需要先定义初始化的组件。
 
 ## 定义初始化的组件

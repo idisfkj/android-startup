@@ -38,6 +38,9 @@ dependencies {
 > Versions update information: [Release](https://github.com/idisfkj/android-startup/releases)
 
 # Quick Usage
+
+![](https://github.com/idisfkj/android-startup/raw/master/images/android_startup_diagram.png)
+
 There are tow ways of using android-startup in your project,need to be initialized before using android-startup.
 
 ## Define Initialize components
