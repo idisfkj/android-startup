@@ -1,6 +1,5 @@
 package com.rousetime.android_startup.model
 
-import com.rousetime.android_startup.AndroidStartup
 import com.rousetime.android_startup.Startup
 
 /**
@@ -8,7 +7,7 @@ import com.rousetime.android_startup.Startup
  * Email: idisfkj@gmail.com.
  */
 data class StartupSortStore(
-    val result: MutableList<AndroidStartup<*>>,
-    val clazzMap: Map<Class<out Startup<*>>, AndroidStartup<*>>,
-    val clazzChildrenMap: Map<Class<out Startup<*>>, MutableList<Class<out Startup<*>>>>
+    val result: MutableList<Startup<*>>,
+    val startupMap: Map<String, Startup<*>>,
+    val startupChildrenMap: Map<String, MutableList<String>>
 )

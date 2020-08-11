@@ -5,6 +5,7 @@ import android.os.Looper
 import com.rousetime.android_startup.dispatcher.ManagerDispatcher
 import com.rousetime.android_startup.execption.StartupException
 import com.rousetime.android_startup.executor.ExecutorManager
+import com.rousetime.android_startup.extensions.getUniqueKey
 import com.rousetime.android_startup.manager.StartupCacheManager
 import com.rousetime.android_startup.model.LoggerLevel
 import com.rousetime.android_startup.model.StartupConfig
@@ -127,7 +128,7 @@ class StartupManager private constructor(
                 StartupCostTimesUtils.clear()
             }
 
-            override fun dispatch(startup: AndroidStartup<*>, sortStore: StartupSortStore) {
+            override fun dispatch(startup: Startup<*>, sortStore: StartupSortStore) {
 
                 StartupLogUtils.d("${startup::class.java.simpleName} being dispatching, onMainThread ${startup.callCreateOnMainThread()}.")
 
@@ -154,11 +155,8 @@ class StartupManager private constructor(
                     mAwaitCountDownLatch?.countDown()
                 }
 
-                sortStore.clazzChildrenMap[dependencyParent::class.java]?.forEach {
-
-                    StartupLogUtils.d("notifyChildren => ${dependencyParent::class.java.simpleName} to notify ${it.simpleName}")
-
-                    sortStore.clazzMap[it]?.run {
+                sortStore.startupChildrenMap[dependencyParent::class.java.getUniqueKey()]?.forEach {
+                    sortStore.startupMap[it]?.run {
                         onDependenciesCompleted(dependencyParent, result)
                         toNotify()
                     }

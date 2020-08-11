@@ -4,8 +4,8 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
 import com.rousetime.android_startup.execption.StartupException
+import com.rousetime.android_startup.extensions.getUniqueKey
 import com.rousetime.android_startup.manager.StartupCacheManager
-import com.rousetime.android_startup.model.StartupConfig
 import com.rousetime.android_startup.model.StartupProviderStore
 import com.rousetime.android_startup.provider.StartupProvider
 import com.rousetime.android_startup.provider.StartupProviderConfig
@@ -23,8 +23,8 @@ class StartupInitializer {
 
     internal fun discoverAndInitialize(context: Context): StartupProviderStore {
         val result = mutableListOf<AndroidStartup<*>>()
-        val initialize = mutableListOf<Class<out Startup<*>>>()
-        val initialized = mutableListOf<Class<out Startup<*>>>()
+        val initialize = mutableListOf<String>()
+        val initialized = mutableListOf<String>()
         var config: StartupProviderConfig? = null
         try {
             val provider = ComponentName(context.packageName, StartupProvider::class.java.name)
@@ -57,21 +57,22 @@ class StartupInitializer {
     private fun doInitialize(
         startup: AndroidStartup<*>,
         result: MutableList<AndroidStartup<*>>,
-        initialize: MutableList<Class<out Startup<*>>>,
-        initialized: MutableList<Class<out Startup<*>>>
+        initialize: MutableList<String>,
+        initialized: MutableList<String>
     ) {
         try {
-            if (initialize.contains(startup::class.java)) {
+            val uniqueKey = startup::class.java.getUniqueKey()
+            if (initialize.contains(uniqueKey)) {
                 throw IllegalStateException("have circle dependencies.")
             }
-            if (!initialized.contains(startup::class.java)) {
-                initialize.add(startup::class.java)
+            if (!initialized.contains(uniqueKey)) {
+                initialize.add(uniqueKey)
                 result.add(startup)
                 startup.dependencies()?.forEach {
                     doInitialize(it.getDeclaredConstructor().newInstance() as AndroidStartup<*>, result, initialize, initialized)
                 }
-                initialize.remove(startup::class.java)
-                initialized.add(startup::class.java)
+                initialize.remove(uniqueKey)
+                initialized.add(uniqueKey)
             }
         } catch (t: Throwable) {
             throw StartupException(t)

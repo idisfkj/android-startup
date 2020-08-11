@@ -2,7 +2,6 @@ package com.rousetime.android_startup.run
 
 import android.content.Context
 import com.rousetime.android_startup.Startup
-import com.rousetime.android_startup.StartupInitializer
 import com.rousetime.android_startup.dispatcher.ManagerDispatcher
 import com.rousetime.android_startup.manager.StartupCacheManager
 import com.rousetime.android_startup.model.StartupSortStore

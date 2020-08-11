@@ -1,8 +1,8 @@
 package com.rousetime.android_startup.sort
 
-import com.rousetime.android_startup.AndroidStartup
 import com.rousetime.android_startup.Startup
 import com.rousetime.android_startup.execption.StartupException
+import com.rousetime.android_startup.extensions.getUniqueKey
 import com.rousetime.android_startup.model.StartupSortStore
 import com.rousetime.android_startup.utils.StartupLogUtils
 import java.util.*
@@ -13,30 +13,32 @@ import java.util.*
  */
 internal object TopologySort {
 
-    fun sort(startupList: List<AndroidStartup<*>>): StartupSortStore {
+    fun sort(startupList: List<Startup<*>>): StartupSortStore {
 
-        val mainResult = mutableListOf<AndroidStartup<*>>()
-        val ioResult = mutableListOf<AndroidStartup<*>>()
-        val temp = mutableListOf<AndroidStartup<*>>()
-        val clazzMap = hashMapOf<Class<out Startup<*>>, AndroidStartup<*>>()
-        val zeroDeque = ArrayDeque<Class<out Startup<*>>>()
-        val clazzChildrenMap = hashMapOf<Class<out Startup<*>>, MutableList<Class<out Startup<*>>>>()
-        val inDegreeMap = hashMapOf<Class<out Startup<*>>, Int>()
+        val mainResult = mutableListOf<Startup<*>>()
+        val ioResult = mutableListOf<Startup<*>>()
+        val temp = mutableListOf<Startup<*>>()
+        val startupMap = hashMapOf<String, Startup<*>>()
+        val zeroDeque = ArrayDeque<String>()
+        val startupChildrenMap = hashMapOf<String, MutableList<String>>()
+        val inDegreeMap = hashMapOf<String, Int>()
 
         startupList.forEach {
-            if (!clazzMap.containsKey(it.javaClass)) {
-                clazzMap[it.javaClass] = it
+            val uniqueKey = it::class.java.getUniqueKey()
+            if (!startupMap.containsKey(uniqueKey)) {
+                startupMap[uniqueKey] = it
                 // save in-degree
-                inDegreeMap[it.javaClass] = it.dependencies()?.size ?: 0
+                inDegreeMap[uniqueKey] = it.dependencies()?.size ?: 0
                 if (it.dependencies().isNullOrEmpty()) {
-                    zeroDeque.offer(it.javaClass)
+                    zeroDeque.offer(uniqueKey)
                 } else {
                     // add key parent, value list children
                     it.dependencies()?.forEach { parent ->
-                        if (clazzChildrenMap[parent] == null) {
-                            clazzChildrenMap[parent] = arrayListOf()
+                        val parentUniqueKey = parent.getUniqueKey()
+                        if (startupChildrenMap[parentUniqueKey] == null) {
+                            startupChildrenMap[parentUniqueKey] = arrayListOf()
                         }
-                        clazzChildrenMap[parent]?.add(it.javaClass)
+                        startupChildrenMap[parentUniqueKey]?.add(uniqueKey)
                     }
                 }
             } else {
@@ -46,7 +48,7 @@ internal object TopologySort {
 
         while (!zeroDeque.isEmpty()) {
             zeroDeque.poll()?.let {
-                clazzMap[it]?.let { androidStartup ->
+                startupMap[it]?.let { androidStartup ->
                     temp.add(androidStartup)
                     // add zero in-degree to result list
                     if (androidStartup.callCreateOnMainThread()) {
@@ -55,7 +57,7 @@ internal object TopologySort {
                         ioResult.add(androidStartup)
                     }
                 }
-                clazzChildrenMap[it]?.forEach { children ->
+                startupChildrenMap[it]?.forEach { children ->
                     inDegreeMap[children] = inDegreeMap[children]?.minus(1) ?: 0
                     // add zero in-degree to deque
                     if (inDegreeMap[children] == 0) {
@@ -69,7 +71,7 @@ internal object TopologySort {
             throw StartupException("lack of dependencies or have circle dependencies.")
         }
 
-        val result = mutableListOf<AndroidStartup<*>>().apply {
+        val result = mutableListOf<Startup<*>>().apply {
             addAll(ioResult)
             addAll(mainResult)
         }
@@ -77,12 +79,12 @@ internal object TopologySort {
 
         return StartupSortStore(
             result,
-            clazzMap,
-            clazzChildrenMap
+            startupMap,
+            startupChildrenMap
         )
     }
 
-    private fun printResult(result: List<AndroidStartup<*>>) {
+    private fun printResult(result: List<Startup<*>>) {
         val printBuilder = buildString {
             append("TopologySort result: ")
             append("\n")
