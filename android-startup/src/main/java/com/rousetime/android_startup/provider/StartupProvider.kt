@@ -19,7 +19,7 @@ class StartupProvider : ContentProvider() {
         context.takeIf { context -> context != null }?.let {
             val store = StartupInitializer.instance.discoverAndInitialize(it)
             StartupManager.Builder()
-                .setConfig(store.config?.getConfig() ?: StartupConfig.Builder().build())
+                .setConfig(store.config?.getConfig())
                 .addAllStartup(store.result)
                 .build(it)
                 .start()

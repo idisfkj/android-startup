@@ -11,6 +11,11 @@ import com.rousetime.android_startup.model.StartupSortStore
 interface ManagerDispatcher {
 
     /**
+     * dispatch prepare
+     */
+    fun prepare()
+
+    /**
      * dispatch startup to executing.
      */
     fun dispatch(startup: AndroidStartup<*>, sortStore: StartupSortStore)

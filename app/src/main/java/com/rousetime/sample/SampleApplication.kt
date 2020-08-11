@@ -5,6 +5,7 @@ import android.util.Log
 import com.rousetime.android_startup.StartupInitializer
 import com.rousetime.android_startup.StartupListener
 import com.rousetime.android_startup.StartupManager
+import com.rousetime.android_startup.manager.StartupCacheManager
 import com.rousetime.android_startup.model.CostTimesModel
 import com.rousetime.android_startup.model.LoggerLevel
 import com.rousetime.android_startup.model.StartupConfig
@@ -47,17 +48,17 @@ class SampleApplication : Application() {
 //            .start()
 //            .await()
 
-        if (StartupInitializer.instance.hadInitialized(SampleSecondStartup::class.java)) {
+        if (StartupCacheManager.instance.hadInitialized(SampleSecondStartup::class.java)) {
             Log.d(
                 TAG,
-                "SampleSecondStartup had initialized, result => ${StartupInitializer.instance.obtainInitializedResult<Boolean>(SampleSecondStartup::class.java)}"
+                "SampleSecondStartup had initialized, result => ${StartupCacheManager.instance.obtainInitializedResult<Boolean>(SampleSecondStartup::class.java)}"
             )
         }
 
-        if (StartupInitializer.instance.hadInitialized(SampleFourthStartup::class.java)) {
+        if (StartupCacheManager.instance.hadInitialized(SampleFourthStartup::class.java)) {
             Log.d(
                 TAG,
-                "SampleFourthStartup had initialized, result => ${StartupInitializer.instance.obtainInitializedResult<Boolean>(SampleFourthStartup::class.java)}"
+                "SampleFourthStartup had initialized, result => ${StartupCacheManager.instance.obtainInitializedResult<Boolean>(SampleFourthStartup::class.java)}"
             )
         } else {
             Log.e(TAG, "SampleFourthStartup not initialized.")

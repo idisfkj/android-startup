@@ -4,6 +4,7 @@ import android.content.Context
 import com.rousetime.android_startup.Startup
 import com.rousetime.android_startup.StartupInitializer
 import com.rousetime.android_startup.dispatcher.ManagerDispatcher
+import com.rousetime.android_startup.manager.StartupCacheManager
 import com.rousetime.android_startup.model.StartupSortStore
 import com.rousetime.android_startup.utils.StartupCostTimesUtils
 import com.rousetime.android_startup.utils.StartupLogUtils
@@ -28,7 +29,7 @@ internal class StartupRunnable(
         StartupCostTimesUtils.recordEnd(startup::class.java)
 
         // To save result of initialized component.
-        StartupInitializer.instance.saveInitializedComponent(startup::class.java, result)
+        StartupCacheManager.instance.saveInitializedComponent(startup::class.java, result)
         StartupLogUtils.d("${startup::class.java.simpleName} was completed.")
 
         dispatcher.notifyChildren(startup, result, sortStore)

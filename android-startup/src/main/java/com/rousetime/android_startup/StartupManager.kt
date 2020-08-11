@@ -5,6 +5,7 @@ import android.os.Looper
 import com.rousetime.android_startup.dispatcher.ManagerDispatcher
 import com.rousetime.android_startup.execption.StartupException
 import com.rousetime.android_startup.executor.ExecutorManager
+import com.rousetime.android_startup.manager.StartupCacheManager
 import com.rousetime.android_startup.model.LoggerLevel
 import com.rousetime.android_startup.model.StartupConfig
 import com.rousetime.android_startup.model.StartupSortStore
@@ -55,7 +56,7 @@ class StartupManager private constructor(
             }
         }
 
-        fun setConfig(config: StartupConfig) = apply {
+        fun setConfig(config: StartupConfig?) = apply {
             mConfig = config
         }
 
@@ -84,7 +85,7 @@ class StartupManager private constructor(
 
     init {
         // save initialized config
-        StartupInitializer.instance.saveConfig(config)
+        StartupCacheManager.instance.saveConfig(config)
         StartupLogUtils.level = config.loggerLevel
     }
 
@@ -104,6 +105,7 @@ class StartupManager private constructor(
         mAwaitCountDownLatch = CountDownLatch(needAwaitCount.get())
         TopologySort.sort(startupList).run {
             mStartTime = System.nanoTime()
+            mDefaultManagerDispatcher.prepare()
             execute(this)
         }
     }
@@ -120,13 +122,17 @@ class StartupManager private constructor(
 
             private var count: AtomicInteger? = null
 
-            override fun dispatch(startup: AndroidStartup<*>, sortStore: StartupSortStore) {
+            override fun prepare() {
                 count = AtomicInteger()
+                StartupCostTimesUtils.clear()
+            }
+
+            override fun dispatch(startup: AndroidStartup<*>, sortStore: StartupSortStore) {
 
                 StartupLogUtils.d("${startup::class.java.simpleName} being dispatching, onMainThread ${startup.callCreateOnMainThread()}.")
 
-                if (StartupInitializer.instance.hadInitialized(startup::class.java)) {
-                    val result = StartupInitializer.instance.obtainInitializedResult<Any>(startup::class.java)
+                if (StartupCacheManager.instance.hadInitialized(startup::class.java)) {
+                    val result = StartupCacheManager.instance.obtainInitializedResult<Any>(startup::class.java)
 
                     StartupLogUtils.d("${startup::class.java.simpleName} was completed, result from cache.")
 

@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">android-startup</string>
+    <string name="initializing">Initializing!</string>
+    <string name="get_sample_second_startup_from_cache_if_exist">Get SampleSecondStartup From Cache If Exist</string>
+    <string name="clear_sample_second_startup_cache">Clear SampleSecondStartup Cache</string>
+    <string name="clear_cache_success">Clear Cache Success</string>
+    <string name="sample_second_startup_result_from_cache">Result Of SampleSecondStartup From Cache: %b</string>
+    <string name="sample_second_startup_not_initialized">SampleSecondStartup not initialized, being initializing...</string>
 </resources>

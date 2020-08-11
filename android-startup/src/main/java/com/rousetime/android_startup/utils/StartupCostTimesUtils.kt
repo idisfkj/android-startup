@@ -26,6 +26,10 @@ internal object StartupCostTimesUtils {
         }
     }
 
+    fun clear() {
+        costTimesMap.clear()
+    }
+
     fun printAll() {
         StartupLogUtils.d(buildString {
             append("startup cost times detail:")
