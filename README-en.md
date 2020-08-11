@@ -41,7 +41,7 @@ dependencies {
 There are tow ways of using android-startup in your project,need to be initialized before using android-startup.
 
 ## Define Initialize components
-You define each component initializer by creating a class that implements the `AndroidStartup<T>` abstract.
+You define each component initializer by creating a class that implements the [AndroidStartup<T>](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/AndroidStartup.kt) abstract.
 This abstract implements the `Startup<T>` interface. And this abstract defines four important methods:
 
 * The `callCreateOnMainThread(): Boolean`method,which control the `create()`method is in the main thread calls.Othrewise in the other thread.
@@ -144,13 +144,106 @@ class SampleApplication : Application() {
 ```
 You can check out the sample [app](https://github.com/idisfkj/android-startup/tree/master/app) for more code information.
 
+Run the example code, the console will produce the log as follows:
+
+1. After the initialization sequence sorting optimization
+
+```
+*****/com.rousetime.sample D/StartupTrack: TopologySort result:
+    |================================================================
+    |         order          |    [1]
+    |----------------------------------------------------------------
+    |        Startup         |    SampleFirstStartup
+    |----------------------------------------------------------------
+    |   Dependencies size    |    0
+    |----------------------------------------------------------------
+    | callCreateOnMainThread |    true
+    |----------------------------------------------------------------
+    |    waitOnMainThread    |    false
+    |================================================================
+    |         order          |    [2]
+    |----------------------------------------------------------------
+    |        Startup         |    SampleSecondStartup
+    |----------------------------------------------------------------
+    |   Dependencies size    |    1
+    |----------------------------------------------------------------
+    | callCreateOnMainThread |    false
+    |----------------------------------------------------------------
+    |    waitOnMainThread    |    true
+    |================================================================
+    |         order          |    [3]
+    |----------------------------------------------------------------
+    |        Startup         |    SampleThirdStartup
+    |----------------------------------------------------------------
+    |   Dependencies size    |    2
+    |----------------------------------------------------------------
+    | callCreateOnMainThread |    false
+    |----------------------------------------------------------------
+    |    waitOnMainThread    |    false
+    |================================================================
+    |         order          |    [4]
+    |----------------------------------------------------------------
+    |        Startup         |    SampleFourthStartup
+    |----------------------------------------------------------------
+    |   Dependencies size    |    3
+    |----------------------------------------------------------------
+    | callCreateOnMainThread |    false
+    |----------------------------------------------------------------
+    |    waitOnMainThread    |    false
+    |================================================================
+```
+
+2. Consumed components initialization times
+
+```
+*****/com.rousetime.sample D/StartupTrack: startup cost times detail:
+    |=================================================================
+    |      Startup Name       |   SampleFirstStartup
+    | ----------------------- | --------------------------------------
+    |   Call On Main Thread   |   true
+    | ----------------------- | --------------------------------------
+    |   Wait On Main Thread   |   false
+    | ----------------------- | --------------------------------------
+    |       Cost Times        |   0 ms
+    |=================================================================
+    |      Startup Name       |   SampleSecondStartup
+    | ----------------------- | --------------------------------------
+    |   Call On Main Thread   |   false
+    | ----------------------- | --------------------------------------
+    |   Wait On Main Thread   |   true
+    | ----------------------- | --------------------------------------
+    |       Cost Times        |   5001 ms
+    |=================================================================
+    |      Startup Name       |   SampleThirdStartup
+    | ----------------------- | --------------------------------------
+    |   Call On Main Thread   |   false
+    | ----------------------- | --------------------------------------
+    |   Wait On Main Thread   |   false
+    | ----------------------- | --------------------------------------
+    |       Cost Times        |   3007 ms
+    |=================================================================
+    |      Startup Name       |   SampleFourthStartup
+    | ----------------------- | --------------------------------------
+    |   Call On Main Thread   |   false
+    | ----------------------- | --------------------------------------
+    |   Wait On Main Thread   |   false
+    | ----------------------- | --------------------------------------
+    |       Cost Times        |   102 ms
+    |=================================================================
+    | Total Main Thread Times |   5008 ms
+    |=================================================================
+```
+
+
 # More
 
 ## Optional Config
 
-* `LoggerLevel`: control Android Startup log level, include `LoggerLevel.NONE`, `LoggerLevel.ERROR` and `LoggerLevel.DEBUG`.
+* [LoggerLevel](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/model/LoggerLevel.kt): control Android Startup log level, include `LoggerLevel.NONE`, `LoggerLevel.ERROR` and `LoggerLevel.DEBUG`.
 
-* `AwaitTimeout`: control Android Startup timeout of await on main thread.
+* [AwaitTimeout](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/model/StartupConfig.kt): control Android Startup timeout of await on main thread.
+
+* [StartupListener](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/StartupListener.kt): Android Startup listener, all the component initialization completes the listener will be called.
 
 ### config in manifest
 To use these config, you must define a class than implements the `StartupProviderConfig` interface:
@@ -162,6 +255,11 @@ class SampleStartupProviderConfig : StartupProviderConfig {
         StartupConfig.Builder()
             .setLoggerLevel(LoggerLevel.DEBUG)
             .setAwaitTimeout(12000L)
+            .setListener(object : StartupListener {
+                override fun onCompleted(totalMainThreadCostTime: Long, costTimesModels: List<CostTimesModel>) {
+                    // can to do cost time statistics.
+                }
+            })
             .build()
 }
 ```
@@ -191,6 +289,11 @@ override fun onCreate() {
     val config = StartupConfig.Builder()
         .setLoggerLevel(LoggerLevel.DEBUG)
         .setAwaitTimeout(12000L)
+        .setListener(object : StartupListener {
+            override fun onCompleted(totalMainThreadCostTime: Long, costTimesModels: List<CostTimesModel>) {
+                // can to do cost time statistics.
+            }
+        })
         .build()
 
     StartupManager.Builder()
@@ -202,13 +305,21 @@ override fun onCreate() {
 }
 ```
 
-## Method
-
-### AndroidStartup
+## [AndroidStartup](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/AndroidStartup.kt)
 
 * `createExecutor(): Executor`: If the startup not create on main thread, them the startup will run in the executor.
 
 * `onDependenciesCompleted(startup: Startup<*>, result: Any?)`: This method is called whenever there is a dependency completion.
+
+## [StartupCacheManager](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/manager/StartupCacheManager.kt)
+
+* `hadInitialized(zClass: Class<out Startup<*>>)`: Check whether the corresponding component initialization has been completed.
+
+* `obtainInitializedResult(zClass: Class<out Startup<*>>): T?`: Obtain corresponding components of has been initialized the returned results.
+
+* `remove(zClass: Class<out Startup<*>>)`: To get rid of the corresponding component initialization cache the results.
+
+* `clear()`: Remove all the component initialization cache the results.
 
 # License
 Please see [LICENSE](https://github.com/idisfkj/android-startup/blob/master/LICENSE)

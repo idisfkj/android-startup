@@ -40,7 +40,7 @@ dependencies {
 android-startup提供了两种使用方式，在使用之前需要先定义初始化的组件。
 
 ## 定义初始化的组件
-每一个初始化的组件都需要实现`AndroidStartup<T>`抽象类，它实现了`Startup<T>`接口，它主要有以下四个抽象方法：
+每一个初始化的组件都需要实现[AndroidStartup<T>](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/AndroidStartup.kt)抽象类，它实现了`Startup<T>`接口，它主要有以下四个抽象方法：
 
 * `callCreateOnMainThread(): Boolean`用来控制`create()`方法调时所在的线程，返回true代表在主线程执行。
 
@@ -143,15 +143,107 @@ class SampleApplication : Application() {
     }
 }
 ```
-完整的代码实例，你可以通过查看[app](https://github.com/idisfkj/android-startup/tree/master/app)获取。
+完整的示例代码，你可以通过查看[app](https://github.com/idisfkj/android-startup/tree/master/app)获取。
+
+运行示例代码，控制台将会产生如下日志:
+
+1. 排序优化之后的初始化顺序
+
+```
+*****/com.rousetime.sample D/StartupTrack: TopologySort result:
+    |================================================================
+    |         order          |    [1]
+    |----------------------------------------------------------------
+    |        Startup         |    SampleFirstStartup
+    |----------------------------------------------------------------
+    |   Dependencies size    |    0
+    |----------------------------------------------------------------
+    | callCreateOnMainThread |    true
+    |----------------------------------------------------------------
+    |    waitOnMainThread    |    false
+    |================================================================
+    |         order          |    [2]
+    |----------------------------------------------------------------
+    |        Startup         |    SampleSecondStartup
+    |----------------------------------------------------------------
+    |   Dependencies size    |    1
+    |----------------------------------------------------------------
+    | callCreateOnMainThread |    false
+    |----------------------------------------------------------------
+    |    waitOnMainThread    |    true
+    |================================================================
+    |         order          |    [3]
+    |----------------------------------------------------------------
+    |        Startup         |    SampleThirdStartup
+    |----------------------------------------------------------------
+    |   Dependencies size    |    2
+    |----------------------------------------------------------------
+    | callCreateOnMainThread |    false
+    |----------------------------------------------------------------
+    |    waitOnMainThread    |    false
+    |================================================================
+    |         order          |    [4]
+    |----------------------------------------------------------------
+    |        Startup         |    SampleFourthStartup
+    |----------------------------------------------------------------
+    |   Dependencies size    |    3
+    |----------------------------------------------------------------
+    | callCreateOnMainThread |    false
+    |----------------------------------------------------------------
+    |    waitOnMainThread    |    false
+    |================================================================
+```
+
+2. 各组件初始化所消耗的时间
+
+```
+*****/com.rousetime.sample D/StartupTrack: startup cost times detail:
+    |=================================================================
+    |      Startup Name       |   SampleFirstStartup
+    | ----------------------- | --------------------------------------
+    |   Call On Main Thread   |   true
+    | ----------------------- | --------------------------------------
+    |   Wait On Main Thread   |   false
+    | ----------------------- | --------------------------------------
+    |       Cost Times        |   0 ms
+    |=================================================================
+    |      Startup Name       |   SampleSecondStartup
+    | ----------------------- | --------------------------------------
+    |   Call On Main Thread   |   false
+    | ----------------------- | --------------------------------------
+    |   Wait On Main Thread   |   true
+    | ----------------------- | --------------------------------------
+    |       Cost Times        |   5001 ms
+    |=================================================================
+    |      Startup Name       |   SampleThirdStartup
+    | ----------------------- | --------------------------------------
+    |   Call On Main Thread   |   false
+    | ----------------------- | --------------------------------------
+    |   Wait On Main Thread   |   false
+    | ----------------------- | --------------------------------------
+    |       Cost Times        |   3007 ms
+    |=================================================================
+    |      Startup Name       |   SampleFourthStartup
+    | ----------------------- | --------------------------------------
+    |   Call On Main Thread   |   false
+    | ----------------------- | --------------------------------------
+    |   Wait On Main Thread   |   false
+    | ----------------------- | --------------------------------------
+    |       Cost Times        |   102 ms
+    |=================================================================
+    | Total Main Thread Times |   5008 ms
+    |=================================================================
+```
 
 # 更多
 
 ## 可选配置
 
-* `LoggerLevel`: 控制Android Startup中的日志输出，可选值包括`LoggerLevel.NONE`, `LoggerLevel.ERROR` and `LoggerLevel.DEBUG`。
+* [LoggerLevel](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/model/LoggerLevel.kt): 控制Android Startup中的日志输出，可选值包括`LoggerLevel.NONE`, `LoggerLevel.ERROR` and `LoggerLevel.DEBUG`。
 
-* `AwaitTimeout`: 控制Android Startup中主线程的超时等待时间，即阻塞的最长时间。
+* [AwaitTimeout](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/model/StartupConfig.kt): 控制Android Startup中主线程的超时等待时间，即阻塞的最长时间。
+
+* [StartupListener](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/StartupListener.kt): Android Startup监听器，所有组件初始化完成之后该监听器会被调用。
 
 ### Manifest中配置
 使用这些配置，你需要定义一个类去实现`StartupProviderConfig`接口，并且实现它的对应方法。
@@ -163,6 +255,11 @@ class SampleStartupProviderConfig : StartupProviderConfig {
         StartupConfig.Builder()
             .setLoggerLevel(LoggerLevel.DEBUG)
             .setAwaitTimeout(12000L)
+            .setListener(object : StartupListener {
+                override fun onCompleted(totalMainThreadCostTime: Long, costTimesModels: List<CostTimesModel>) {
+                    // can to do cost time statistics.
+                }
+            })
             .build()
 }
 ```
@@ -192,6 +289,11 @@ override fun onCreate() {
     val config = StartupConfig.Builder()
         .setLoggerLevel(LoggerLevel.DEBUG)
         .setAwaitTimeout(12000L)
+        .setListener(object : StartupListener {
+            override fun onCompleted(totalMainThreadCostTime: Long, costTimesModels: List<CostTimesModel>) {
+                // can to do cost time statistics.
+            }
+        })
         .build()
 
     StartupManager.Builder()
@@ -203,13 +305,21 @@ override fun onCreate() {
 }
 ```
 
-## 方法
-
-### AndroidStartup
+## [AndroidStartup](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/AndroidStartup.kt)
 
 * `createExecutor(): Executor`: 如果定义的组件没有运行在主线程，那么可以通过该方法进行控制运行的子线程。
 
 * `onDependenciesCompleted(startup: Startup<*>, result: Any?)`: 该方法会在每一个依赖执行完毕之后进行回调。
+
+## [StartupCacheManager](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/manager/StartupCacheManager.kt)
+
+* `hadInitialized(zClass: Class<out Startup<*>>)`: 检验对应的组件是否已经初始化完成。
+
+* `obtainInitializedResult(zClass: Class<out Startup<*>>): T?`: 获取对应已经初始化的组件所返回的结果。
+
+* `remove(zClass: Class<out Startup<*>>)`: 清除对应组件的初始化缓存结果。
+
+* `clear()`: 清除所有组件初始化的缓存结果。
 
 # 实战测试
 [AwesomeGithub](https://github.com/idisfkj/AwesomeGithub)中使用了`Android Startup`，优化配置的初始化时间与组件化开发的配置注入时机，使用前与使用后时间对比:
