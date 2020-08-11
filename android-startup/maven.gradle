@@ -7,7 +7,7 @@ ext {
     libraryDescription = 'The Android Startup library provides a straightforward, performant way to initialize components at application startup. Both library developers and app developers can use Android Startup to streamline startup sequences and explicitly set the order of initialization'
     siteUrl = 'https://github.com/idisfkj/android-startup'
     gitUrl = 'https://github.com/idisfkj/android-startup.git'
-    libraryVersion = '1.0.1'
+    libraryVersion = '1.0.2'
     developerId = 'idisfkj'
     developerName = 'idisfkj'
     developerEmail = 'idisfkj@gmail.com'
