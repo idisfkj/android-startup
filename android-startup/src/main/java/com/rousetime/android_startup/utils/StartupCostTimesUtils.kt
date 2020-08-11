@@ -16,8 +16,13 @@ internal object StartupCostTimesUtils {
 
     var mainThreadTimes = 0L
 
-    fun recordStart(startup: Class<out Startup<*>>, callOnMainThread: Boolean) {
-        costTimesMap[startup.getUniqueKey()] = CostTimesModel(startup.simpleName, callOnMainThread, System.nanoTime() / ACCURACY)
+    fun recordStart(startup: Class<out Startup<*>>, callOnMainThread: Boolean, waitOnMainThread: Boolean) {
+        costTimesMap[startup.getUniqueKey()] = CostTimesModel(
+            startup.simpleName,
+            callOnMainThread,
+            waitOnMainThread,
+            System.nanoTime() / ACCURACY
+        )
     }
 
     fun recordEnd(startup: Class<out Startup<*>>) {
@@ -41,7 +46,11 @@ internal object StartupCostTimesUtils {
                 append("\n")
                 append("| ----------------------- | --------------------------------------")
                 append("\n")
-                append("|      On Main Thread     |   ${it.callOnMainThread}")
+                append("|   Call On Main Thread   |   ${it.callOnMainThread}")
+                append("\n")
+                append("| ----------------------- | --------------------------------------")
+                append("\n")
+                append("|   Wait On Main Thread   |   ${it.waitOnMainThread}")
                 append("\n")
                 append("| ----------------------- | --------------------------------------")
                 append("\n")

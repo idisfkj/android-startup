@@ -24,7 +24,7 @@ internal class StartupRunnable(
         startup.toWait()
         StartupLogUtils.d("${startup::class.java.simpleName} being create.")
 
-        StartupCostTimesUtils.recordStart(startup::class.java, startup.callCreateOnMainThread())
+        StartupCostTimesUtils.recordStart(startup::class.java, startup.callCreateOnMainThread(), startup.waitOnMainThread())
         val result = startup.create(context)
         StartupCostTimesUtils.recordEnd(startup::class.java)
 
