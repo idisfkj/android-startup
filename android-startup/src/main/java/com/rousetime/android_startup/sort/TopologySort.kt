@@ -17,6 +17,7 @@ internal object TopologySort {
 
         val mainResult = mutableListOf<AndroidStartup<*>>()
         val ioResult = mutableListOf<AndroidStartup<*>>()
+        val temp = mutableListOf<AndroidStartup<*>>()
         val clazzMap = hashMapOf<Class<out Startup<*>>, AndroidStartup<*>>()
         val zeroDeque = ArrayDeque<Class<out Startup<*>>>()
         val clazzChildrenMap = hashMapOf<Class<out Startup<*>>, MutableList<Class<out Startup<*>>>>()
@@ -46,6 +47,7 @@ internal object TopologySort {
         while (!zeroDeque.isEmpty()) {
             zeroDeque.poll()?.let {
                 clazzMap[it]?.let { androidStartup ->
+                    temp.add(androidStartup)
                     // add zero in-degree to result list
                     if (androidStartup.callCreateOnMainThread()) {
                         mainResult.add(androidStartup)
@@ -71,7 +73,7 @@ internal object TopologySort {
             addAll(ioResult)
             addAll(mainResult)
         }
-        printResult(result)
+        printResult(temp)
 
         return StartupSortStore(
             result,
@@ -87,7 +89,7 @@ internal object TopologySort {
             append("|================================================================")
             result.forEachIndexed { index, it ->
                 append("\n")
-                append("|         order          |    [$index] ")
+                append("|         order          |    [${index + 1}] ")
                 append("\n")
                 append("|----------------------------------------------------------------")
                 append("\n")
