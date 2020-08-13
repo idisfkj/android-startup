@@ -25,6 +25,8 @@ Android Startup提供一种在应用启动时能够更加简单、高效的方�
 |依赖回调| ❌ | ✅ |
 |拓扑优化| ❌ | ✅ |
 
+> 开源不易，希望朋友小手一抖，右上角来个star，感谢🙏
+
 # 添加依赖
 将下面的依赖添加到`build.gradle`文件中:
 
@@ -38,7 +40,7 @@ dependencies {
 
 # 快速使用
 
-![](https://github.com/idisfkj/android-startup/raw/master/images/android_startup_diagram.png)
+![](./images/android_startup_diagram.png)
 
 android-startup提供了两种使用方式，在使用之前需要先定义初始化的组件。
 

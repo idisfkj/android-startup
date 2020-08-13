@@ -26,6 +26,8 @@ Here is a piece of with Google [App Startup](https://developer.android.com/topic
 |Callback Dependencies| ❌ | ✅ |
 |Topology optimization| ❌ | ✅ |
 
+> Open source is not easy, I hope friends shake hands, a star in the upper right corner, thank you🙏
+
 # Setup
 Add the following dependency to your `build.gradle` file:
 
@@ -39,7 +41,7 @@ dependencies {
 
 # Quick Usage
 
-![](https://github.com/idisfkj/android-startup/raw/master/images/android_startup_diagram.png)
+![](./images/android_startup_diagram.png)
 
 There are tow ways of using android-startup in your project,need to be initialized before using android-startup.
 
