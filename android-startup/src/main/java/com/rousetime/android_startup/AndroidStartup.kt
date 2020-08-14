@@ -1,5 +1,6 @@
 package com.rousetime.android_startup
 
+import com.rousetime.android_startup.dispatcher.Dispatcher
 import com.rousetime.android_startup.executor.ExecutorManager
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executor
@@ -10,18 +11,19 @@ import java.util.concurrent.Executor
  */
 abstract class AndroidStartup<T> : Startup<T> {
 
-    private val waitCountDown by lazy { CountDownLatch(dependencies()?.size ?: 0) }
+    private val mWaitCountDown by lazy { CountDownLatch(dependencies()?.size ?: 0) }
+    private val mObservers by lazy { mutableListOf<Dispatcher>() }
 
     override fun toWait() {
         try {
-            waitCountDown.await()
+            mWaitCountDown.await()
         } catch (e: InterruptedException) {
             e.printStackTrace()
         }
     }
 
     override fun toNotify() {
-        waitCountDown.countDown()
+        mWaitCountDown.countDown()
     }
 
     override fun createExecutor(): Executor = ExecutorManager.instance.ioExecutor
@@ -32,4 +34,15 @@ abstract class AndroidStartup<T> : Startup<T> {
 
     override fun onDependenciesCompleted(startup: Startup<*>, result: Any?) {}
 
+    override fun manualDispatch(): Boolean = false
+
+    override fun registerDispatcher(dispatcher: Dispatcher) {
+        mObservers.add(dispatcher)
+    }
+
+    override fun onDispatch() {
+        mObservers.forEach {
+            it.toNotify()
+        }
+    }
 }

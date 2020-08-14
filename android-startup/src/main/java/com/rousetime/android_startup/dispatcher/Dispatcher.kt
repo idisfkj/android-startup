@@ -13,6 +13,8 @@ interface Dispatcher {
 
     /**
      * Return true block the main thread until the startup completed otherwise false.
+     *
+     * Note: If the function [callCreateOnMainThread] return true, main thread default block.
      */
     fun waitOnMainThread(): Boolean
 

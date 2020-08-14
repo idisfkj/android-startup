@@ -61,7 +61,12 @@ internal class StartupManagerDispatcher(
         sortStore.startupChildrenMap[dependencyParent::class.java.getUniqueKey()]?.forEach {
             sortStore.startupMap[it]?.run {
                 onDependenciesCompleted(dependencyParent, result)
-                toNotify()
+
+                if (dependencyParent.manualDispatch()) {
+                    dependencyParent.registerDispatcher(this)
+                } else {
+                    toNotify()
+                }
             }
         }
         val size = count?.incrementAndGet() ?: 0
