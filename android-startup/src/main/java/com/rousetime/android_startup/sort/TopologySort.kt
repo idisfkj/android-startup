@@ -1,5 +1,6 @@
 package com.rousetime.android_startup.sort
 
+import androidx.core.os.TraceCompat
 import com.rousetime.android_startup.Startup
 import com.rousetime.android_startup.execption.StartupException
 import com.rousetime.android_startup.extensions.getUniqueKey
@@ -14,6 +15,7 @@ import java.util.*
 internal object TopologySort {
 
     fun sort(startupList: List<Startup<*>>): StartupSortStore {
+        TraceCompat.beginSection(TopologySort::class.java.simpleName)
 
         val mainResult = mutableListOf<Startup<*>>()
         val ioResult = mutableListOf<Startup<*>>()
@@ -76,6 +78,8 @@ internal object TopologySort {
             addAll(mainResult)
         }
         printResult(temp)
+
+        TraceCompat.endSection()
 
         return StartupSortStore(
             result,

@@ -3,6 +3,7 @@ package com.rousetime.android_startup
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
+import androidx.core.os.TraceCompat
 import com.rousetime.android_startup.execption.StartupException
 import com.rousetime.android_startup.extensions.getUniqueKey
 import com.rousetime.android_startup.manager.StartupCacheManager
@@ -22,6 +23,9 @@ class StartupInitializer {
     }
 
     internal fun discoverAndInitialize(context: Context): StartupProviderStore {
+
+        TraceCompat.beginSection(StartupInitializer::class.java.simpleName)
+
         val result = mutableListOf<AndroidStartup<*>>()
         val initialize = mutableListOf<String>()
         val initialized = mutableListOf<String>()
@@ -51,6 +55,9 @@ class StartupInitializer {
         } catch (t: Throwable) {
             throw StartupException(t)
         }
+
+        TraceCompat.endSection()
+
         return StartupProviderStore(result, config)
     }
 

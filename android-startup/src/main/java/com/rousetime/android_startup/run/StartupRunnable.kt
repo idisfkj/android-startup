@@ -1,6 +1,7 @@
 package com.rousetime.android_startup.run
 
 import android.content.Context
+import androidx.core.os.TraceCompat
 import com.rousetime.android_startup.Startup
 import com.rousetime.android_startup.dispatcher.ManagerDispatcher
 import com.rousetime.android_startup.manager.StartupCacheManager
@@ -23,9 +24,11 @@ internal class StartupRunnable(
         startup.toWait()
         StartupLogUtils.d("${startup::class.java.simpleName} being create.")
 
+        TraceCompat.beginSection(startup::class.java.simpleName)
         StartupCostTimesUtils.recordStart(startup::class.java, startup.callCreateOnMainThread(), startup.waitOnMainThread())
         val result = startup.create(context)
         StartupCostTimesUtils.recordEnd(startup::class.java)
+        TraceCompat.endSection()
 
         // To save result of initialized component.
         StartupCacheManager.instance.saveInitializedComponent(startup::class.java, result)

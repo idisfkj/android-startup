@@ -2,6 +2,7 @@ package com.rousetime.android_startup
 
 import android.content.Context
 import android.os.Looper
+import androidx.core.os.TraceCompat
 import com.rousetime.android_startup.dispatcher.ManagerDispatcher
 import com.rousetime.android_startup.execption.StartupException
 import com.rousetime.android_startup.executor.ExecutorManager
@@ -103,11 +104,18 @@ class StartupManager private constructor(
             throw StartupException("start method repeated call.")
         }
 
+        TraceCompat.beginSection(StartupManager::class.java.simpleName)
+        mStartTime = System.nanoTime()
+
         mAwaitCountDownLatch = CountDownLatch(needAwaitCount.get())
         TopologySort.sort(startupList).run {
-            mStartTime = System.nanoTime()
             mDefaultManagerDispatcher.prepare()
             execute(this)
+        }
+
+        if (needAwaitCount.get() <= 0) {
+            StartupCostTimesUtils.mainThreadTimes = System.nanoTime() - mStartTime
+            TraceCompat.endSection()
         }
     }
 
@@ -184,12 +192,16 @@ class StartupManager private constructor(
             throw StartupException("must be call start method before call await method.")
         }
 
+        val count = needAwaitCount.get()
         try {
             mAwaitCountDownLatch?.await(config.awaitTimeout, TimeUnit.MILLISECONDS)
-
-            StartupCostTimesUtils.mainThreadTimes = System.nanoTime() - mStartTime
         } catch (e: InterruptedException) {
             e.printStackTrace()
+        }
+
+        if (count > 0) {
+            StartupCostTimesUtils.mainThreadTimes = System.nanoTime() - mStartTime
+            TraceCompat.endSection()
         }
     }
 }
