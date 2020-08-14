@@ -3,15 +3,12 @@ package com.rousetime.android_startup
 import android.content.Context
 import android.os.Looper
 import androidx.core.os.TraceCompat
-import com.rousetime.android_startup.dispatcher.ManagerDispatcher
+import com.rousetime.android_startup.dispatcher.StartupManagerDispatcher
 import com.rousetime.android_startup.execption.StartupException
-import com.rousetime.android_startup.executor.ExecutorManager
-import com.rousetime.android_startup.extensions.getUniqueKey
 import com.rousetime.android_startup.manager.StartupCacheManager
 import com.rousetime.android_startup.model.LoggerLevel
 import com.rousetime.android_startup.model.StartupConfig
 import com.rousetime.android_startup.model.StartupSortStore
-import com.rousetime.android_startup.run.StartupRunnable
 import com.rousetime.android_startup.sort.TopologySort
 import com.rousetime.android_startup.utils.StartupCostTimesUtils
 import com.rousetime.android_startup.utils.StartupLogUtils
@@ -124,63 +121,10 @@ class StartupManager private constructor(
     }
 
     /**
-     * When dependencyParent startup completed, to notify children
+     * Startup dispatcher
      */
     private val mDefaultManagerDispatcher by lazy {
-        object : ManagerDispatcher {
-
-            private var count: AtomicInteger? = null
-
-            override fun prepare() {
-                count = AtomicInteger()
-                StartupCostTimesUtils.clear()
-            }
-
-            override fun dispatch(startup: Startup<*>, sortStore: StartupSortStore) {
-
-                StartupLogUtils.d("${startup::class.java.simpleName} being dispatching, onMainThread ${startup.callCreateOnMainThread()}.")
-
-                if (StartupCacheManager.instance.hadInitialized(startup::class.java)) {
-                    val result = StartupCacheManager.instance.obtainInitializedResult<Any>(startup::class.java)
-
-                    StartupLogUtils.d("${startup::class.java.simpleName} was completed, result from cache.")
-
-                    notifyChildren(startup, result, sortStore)
-                } else {
-                    val runnable = StartupRunnable(context, startup, sortStore, this)
-                    if (!startup.callCreateOnMainThread()) {
-                        startup.createExecutor().execute(runnable)
-                    } else {
-                        runnable.run()
-                    }
-                }
-            }
-
-            override fun notifyChildren(dependencyParent: Startup<*>, result: Any?, sortStore: StartupSortStore) {
-                // immediately notify main thread,Unblock the main thread.
-                if (dependencyParent.waitOnMainThread()) {
-                    needAwaitCount.incrementAndGet()
-                    mAwaitCountDownLatch?.countDown()
-                }
-
-                sortStore.startupChildrenMap[dependencyParent::class.java.getUniqueKey()]?.forEach {
-                    sortStore.startupMap[it]?.run {
-                        onDependenciesCompleted(dependencyParent, result)
-                        toNotify()
-                    }
-                }
-                val size = count?.incrementAndGet() ?: 0
-                if (size == startupList.size) {
-                    StartupCostTimesUtils.printAll()
-                    config.listener?.let {
-                        ExecutorManager.instance.mainExecutor.execute {
-                            it.onCompleted(StartupCostTimesUtils.mainThreadTimes, StartupCostTimesUtils.costTimesMap.values.toList())
-                        }
-                    }
-                }
-            }
-
-        }
+        StartupManagerDispatcher(context, needAwaitCount, mAwaitCountDownLatch, startupList.size, config.listener)
     }
 
     /**
