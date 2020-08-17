@@ -8,6 +8,7 @@
     <string name="clear_cache_success">Clear Cache Success</string>
     <string name="sample_second_startup_result_from_cache">Result Of SampleSecondStartup From Cache: %b</string>
     <string name="sample_second_startup_not_initialized">SampleSecondStartup not initialized, being initializing…</string>
+    <string name="sample_startup_not_initialized">Sample Startup not initialized, being initializing…</string>
     <string name="more">More</string>
     <string name="sync_and_sync">Sync And Sync</string>
     <string name="sync_and_async">Sync And Async</string>

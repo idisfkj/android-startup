@@ -13,7 +13,7 @@ import com.rousetime.android_startup.model.CostTimesModel
 import com.rousetime.android_startup.model.LoggerLevel
 import com.rousetime.android_startup.model.StartupConfig
 import com.rousetime.sample.startup.*
-import kotlinx.android.synthetic.main.activity_common.*
+import kotlinx.android.synthetic.main.activity_common.content
 
 /**
  * Created by idisfkj on 2020/8/13.
@@ -39,6 +39,9 @@ class SampleCommonActivity : AppCompatActivity() {
     }
 
     private fun start() {
+        // show initialize tips
+        content.text = getString(R.string.sample_startup_not_initialized)
+
         val list = mutableListOf<AndroidStartup<*>>()
         when (intent.getIntExtra("id", -1)) {
             R.id.sync_and_sync -> {
@@ -46,18 +49,20 @@ class SampleCommonActivity : AppCompatActivity() {
                 list.add(SampleSyncTwoStartup())
             }
             R.id.sync_and_async -> {
-                list.add(SampleSyncOneStartup())
+                list.add(SampleSyncThreeStartup())
                 list.add(SampleAsyncOneStartup())
             }
             R.id.async_and_sync -> {
                 list.add(SampleAsyncTwoStartup())
-                list.add(SampleSyncThreeStartup())
+                list.add(SampleSyncFourStartup())
             }
             R.id.async_and_async -> {
-
+                list.add(SampleAsyncFiveStartup())
+                list.add(SampleAsyncThreeStartup())
             }
             R.id.async_and_async_await_main_thread -> {
-
+                list.add(SampleAsyncSixStartup())
+                list.add(SampleAsyncFourStartup())
             }
         }
         val config = StartupConfig.Builder()
@@ -96,7 +101,7 @@ class SampleCommonActivity : AppCompatActivity() {
             })
             .build()
 
-        // because SampleSecondStartup need to block on main thread.
+        // because some scenarios startup block on main thread.
         // in order to show initialize tips,to delay a frame times.
         Handler().postDelayed({
             StartupManager.Builder()
