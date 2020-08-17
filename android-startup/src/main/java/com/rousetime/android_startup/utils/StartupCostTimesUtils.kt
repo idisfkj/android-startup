@@ -14,7 +14,12 @@ internal object StartupCostTimesUtils {
 
     private const val ACCURACY = 1000 * 1000L
 
-    var mainThreadTimes = 0L
+    var startTime = 0L
+    @Volatile
+    var endTime: Long? = null
+
+    val mainThreadTimes
+        get() = (endTime ?: System.nanoTime()) - startTime
 
     fun recordStart(startup: Class<out Startup<*>>, callOnMainThread: Boolean, waitOnMainThread: Boolean) {
         costTimesMap[startup.getUniqueKey()] = CostTimesModel(
@@ -32,6 +37,7 @@ internal object StartupCostTimesUtils {
     }
 
     fun clear() {
+        endTime = null
         costTimesMap.clear()
     }
 

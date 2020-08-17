@@ -2,6 +2,7 @@ package com.rousetime.android_startup
 
 import android.content.Context
 import android.os.Looper
+import android.os.SystemClock
 import androidx.core.os.TraceCompat
 import com.rousetime.android_startup.dispatcher.StartupManagerDispatcher
 import com.rousetime.android_startup.execption.StartupException
@@ -28,7 +29,6 @@ class StartupManager private constructor(
 ) {
 
     private var mAwaitCountDownLatch: CountDownLatch? = null
-    private var mStartTime: Long = 0L
 
     companion object {
         const val AWAIT_TIMEOUT = 10000L
@@ -102,7 +102,7 @@ class StartupManager private constructor(
         }
 
         TraceCompat.beginSection(StartupManager::class.java.simpleName)
-        mStartTime = System.nanoTime()
+        StartupCostTimesUtils.startTime = System.nanoTime()
 
         mAwaitCountDownLatch = CountDownLatch(needAwaitCount.get())
         TopologySort.sort(startupList).run {
@@ -111,7 +111,7 @@ class StartupManager private constructor(
         }
 
         if (needAwaitCount.get() <= 0) {
-            StartupCostTimesUtils.mainThreadTimes = System.nanoTime() - mStartTime
+            StartupCostTimesUtils.endTime = System.nanoTime()
             TraceCompat.endSection()
         }
     }
@@ -144,7 +144,7 @@ class StartupManager private constructor(
         }
 
         if (count > 0) {
-            StartupCostTimesUtils.mainThreadTimes = System.nanoTime() - mStartTime
+            StartupCostTimesUtils.endTime = System.nanoTime()
             TraceCompat.endSection()
         }
     }

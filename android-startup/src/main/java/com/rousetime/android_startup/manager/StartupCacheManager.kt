@@ -17,6 +17,7 @@ class StartupCacheManager {
         private set
 
     companion object {
+        @JvmStatic
         val instance by lazy { StartupCacheManager() }
     }
 
