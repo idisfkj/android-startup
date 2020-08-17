@@ -1,5 +1,6 @@
 package com.rousetime.sample
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
@@ -8,6 +9,7 @@ import com.rousetime.android_startup.StartupManager
 import com.rousetime.android_startup.manager.StartupCacheManager
 import com.rousetime.sample.startup.SampleFirstStartup
 import com.rousetime.sample.startup.SampleSecondStartup
+import com.rousetime.sample.startup.SampleStartupProviderConfig
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -29,7 +31,7 @@ class MainActivity : AppCompatActivity() {
                 // in order to show initialize tips,to delay a frame times.
                 Handler().postDelayed({
                     StartupManager.Builder()
-                        .setConfig(StartupCacheManager.instance.initializedConfig)
+                        .setConfig(SampleStartupProviderConfig().getConfig())
                         .addStartup(SampleFirstStartup())
                         .addStartup(SampleSecondStartup())
                         .build(this)
@@ -42,6 +44,10 @@ class MainActivity : AppCompatActivity() {
         clear.setOnClickListener {
             StartupCacheManager.instance.remove(SampleSecondStartup::class.java)
             content.text = getString(R.string.clear_cache_success)
+        }
+
+        more.setOnClickListener {
+            startActivity(Intent(this, SampleMoreActivity::class.java))
         }
 
         SampleApplication.costTimesLiveData.observe(this, Observer {

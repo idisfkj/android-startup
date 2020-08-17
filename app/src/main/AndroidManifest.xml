@@ -18,6 +18,10 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".SampleMoreActivity" />
+
+        <activity android:name=".SampleCommonActivity" />
+
         <provider
             android:name="com.rousetime.android_startup.provider.StartupProvider"
             android:authorities="${applicationId}.android_startup"
