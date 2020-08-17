@@ -8,7 +8,6 @@ import com.rousetime.android_startup.StartupManager
 import com.rousetime.android_startup.manager.StartupCacheManager
 import com.rousetime.sample.startup.SampleFirstStartup
 import com.rousetime.sample.startup.SampleSecondStartup
-import com.rousetime.sample.startup.SampleStartupProviderConfig
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -45,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             content.text = getString(R.string.clear_cache_success)
         }
 
-        SampleStartupProviderConfig.costTimesLiveData.observe(this, Observer {
+        SampleApplication.costTimesLiveData.observe(this, Observer {
             content.text = buildString {
                 append("Startup Completed: ")
                 append("\n")

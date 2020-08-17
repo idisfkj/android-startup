@@ -2,6 +2,7 @@ package com.rousetime.sample
 
 import android.app.Application
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import com.rousetime.android_startup.StartupInitializer
 import com.rousetime.android_startup.StartupListener
 import com.rousetime.android_startup.StartupManager
@@ -22,6 +23,8 @@ class SampleApplication : Application() {
 
     companion object {
         const val TAG = "SampleApplication"
+        // only in order to test on MainActivity.
+        val costTimesLiveData = MutableLiveData<List<CostTimesModel>>()
     }
 
     override fun onCreate() {
@@ -33,6 +36,7 @@ class SampleApplication : Application() {
 //            .setListener(object : StartupListener {
 //                override fun onCompleted(totalMainThreadCostTime: Long, costTimesModels: List<CostTimesModel>) {
 //                    // can to do cost time statistics.
+//                    costTimesLiveData.value = costTimesModels
 //                    Log.d("StartupTrack", "onCompleted: ${costTimesModels.size}")
 //                }
 //            })
