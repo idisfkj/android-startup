@@ -24,6 +24,7 @@ Here is a piece of with Google [App Startup](https://developer.android.com/topic
 |Thread Of Control| ❌ | ✅ |
 |Async await| ❌ | ✅ |
 |Callback Dependencies| ❌ | ✅ |
+|Manual Notify| ❌ | ✅ |
 |Topology optimization| ❌ | ✅ |
 
 > Open source is not easy, I hope friends shake hands, a star in the upper right corner, thank you🙏
@@ -316,6 +317,10 @@ override fun onCreate() {
 
 * `onDependenciesCompleted(startup: Startup<*>, result: Any?)`: This method is called whenever there is a dependency completion.
 
+* `manualDispatch(): Boolean`: Returns true that manual to dispatch. but must be call `onDispatch()`, in order to notify children that dependencies startup completed.
+
+* `onDispatch()`: Start to dispatch when `manualDispatch()` return true.
+
 ## [StartupCacheManager](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/manager/StartupCacheManager.kt)
 
 * `hadInitialized(zClass: Class<out Startup<*>>)`: Check whether the corresponding component initialization has been completed.
@@ -325,6 +330,20 @@ override fun onCreate() {
 * `remove(zClass: Class<out Startup<*>>)`: To get rid of the corresponding component initialization cache the results.
 
 * `clear()`: Remove all the component initialization cache the results.
+
+# Sample
+
+* [Sync And Sync](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): Synchronization and synchronization depend on the scene.
+
+* [Sync And Async](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): Synchronous and asynchronous depend on the scene.
+
+* [Async And Sync](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): Asynchronous and synchronous depend on the scene.
+
+* [Async And Async](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): Asynchronous and asynchronous depend on the scene.
+
+* [Async And Async Await Main Thread](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): Asynchronous with asynchronous rely on wait in the main thread.
+
+* [Manual Dispatch](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): Manually inform rely on the complete scene.
 
 # License
 Please see [LICENSE](https://github.com/idisfkj/android-startup/blob/master/LICENSE)

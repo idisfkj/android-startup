@@ -23,6 +23,7 @@ Android Startup提供一种在应用启动时能够更加简单、高效的方�
 |线程控制| ❌ | ✅ |
 |异步等待| ❌ | ✅ |
 |依赖回调| ❌ | ✅ |
+|手动通知| ❌ | ✅ |
 |拓扑优化| ❌ | ✅ |
 
 > 开源不易，希望朋友小手一抖，右上角来个star，感谢🙏
@@ -316,6 +317,10 @@ override fun onCreate() {
 
 * `onDependenciesCompleted(startup: Startup<*>, result: Any?)`: 该方法会在每一个依赖执行完毕之后进行回调。
 
+* `manualDispatch(): Boolean`: 返回`true`时，代表需要手动去通知依赖自身的子组件; 需要配合`onDispatch()`来使用。
+
+* `onDispatch()`: 配合`manualDispatch()`使用，通知依赖自身的子组件，开始执行子组件的初始化逻辑。
+
 ## [StartupCacheManager](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/manager/StartupCacheManager.kt)
 
 * `hadInitialized(zClass: Class<out Startup<*>>)`: 检验对应的组件是否已经初始化完成。
@@ -325,6 +330,20 @@ override fun onCreate() {
 * `remove(zClass: Class<out Startup<*>>)`: 清除对应组件的初始化缓存结果。
 
 * `clear()`: 清除所有组件初始化的缓存结果。
+
+# 示例
+
+* [Sync And Sync](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): 同步与同步依赖的场景
+
+* [Sync And Async](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): 同步与异步依赖的场景
+
+* [Async And Sync](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): 异步与同步依赖的场景
+
+* [Async And Async](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): 异步与异步依赖的场景
+
+* [Async And Async Await Main Thread](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): 异步与异步依赖在主线程等候的场景
+
+* [Manual Dispatch](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): 手动通知依赖完成的场景
 
 # 实战测试
 [AwesomeGithub](https://github.com/idisfkj/AwesomeGithub)中使用了`Android Startup`，优化配置的初始化时间与组件化开发的配置注入时机，使用前与使用后时间对比:
