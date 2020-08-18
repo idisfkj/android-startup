@@ -69,4 +69,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/async_and_async" />
 
+    <Button
+        android:id="@+id/manual_dispatch"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:onClick="onClick"
+        android:text="@string/manual_dispatch"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/async_and_async_await_main_thread" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -13,7 +13,7 @@ import com.rousetime.android_startup.model.CostTimesModel
 import com.rousetime.android_startup.model.LoggerLevel
 import com.rousetime.android_startup.model.StartupConfig
 import com.rousetime.sample.startup.*
-import kotlinx.android.synthetic.main.activity_common.content
+import kotlinx.android.synthetic.main.activity_common.*
 
 /**
  * Created by idisfkj on 2020/8/13.
@@ -63,6 +63,11 @@ class SampleCommonActivity : AppCompatActivity() {
             R.id.async_and_async_await_main_thread -> {
                 list.add(SampleAsyncSixStartup())
                 list.add(SampleAsyncFourStartup())
+            }
+            R.id.manual_dispatch -> {
+                list.add(SampleManualDispatchStartup())
+                list.add(SampleAsyncSevenStartup())
+                list.add(SampleSyncFiveStartup())
             }
         }
         val config = StartupConfig.Builder()

@@ -12,7 +12,7 @@ class SampleAsyncFiveStartup: AndroidStartup<String>() {
     override fun callCreateOnMainThread(): Boolean = false
 
     override fun create(context: Context): String? {
-        Thread.sleep(1300)
+        Thread.sleep(1000)
         return "async five"
     }
 

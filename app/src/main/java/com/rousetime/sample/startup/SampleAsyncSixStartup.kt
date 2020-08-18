@@ -12,7 +12,7 @@ class SampleAsyncSixStartup: AndroidStartup<String>() {
     override fun callCreateOnMainThread(): Boolean = false
 
     override fun create(context: Context): String? {
-        Thread.sleep(1800)
+        Thread.sleep(2000)
         return "async six"
     }
 

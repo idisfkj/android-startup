@@ -6,26 +6,26 @@ import com.rousetime.android_startup.Startup
 
 /**
  * Created by idisfkj on 2020/8/18.
- * Email : idisfkj@gmail.com.
+ * Email: idisfkj@gmail.com.
  */
-class SampleAsyncFourStartup : AndroidStartup<String>() {
+class SampleSyncFiveStartup : AndroidStartup<String>() {
 
     private var mResult: String? = null
 
-    override fun callCreateOnMainThread(): Boolean = false
-
     override fun create(context: Context): String? {
-        Thread.sleep(1000)
-        return "$mResult + async four"
+        return "$mResult + sync five"
     }
 
-    override fun waitOnMainThread(): Boolean = true
+    override fun callCreateOnMainThread(): Boolean = true
+
+    override fun waitOnMainThread(): Boolean = false
 
     override fun dependencies(): List<Class<out Startup<*>>>? {
-        return listOf(SampleAsyncSixStartup::class.java)
+        return listOf(SampleManualDispatchStartup::class.java)
     }
 
     override fun onDependenciesCompleted(startup: Startup<*>, result: Any?) {
         mResult = result as? String?
     }
+
 }

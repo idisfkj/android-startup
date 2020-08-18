@@ -15,4 +15,5 @@
     <string name="async_and_sync">Async And Sync</string>
     <string name="async_and_async">Async And Async</string>
     <string name="async_and_async_await_main_thread">Async And Async Await Main Thread</string>
+    <string name="manual_dispatch">Manual Dispatch</string>
 </resources>
