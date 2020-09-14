@@ -18,7 +18,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".SampleMoreActivity" />
+        <activity
+            android:name=".SampleMoreActivity"
+            android:process=":multiple.provider" />
 
         <activity android:name=".SampleCommonActivity" />
 
@@ -33,6 +35,22 @@
 
             <meta-data
                 android:name="com.rousetime.sample.startup.SampleFourthStartup"
+                android:value="android.startup" />
+
+        </provider>
+
+        <provider
+            android:name=".provider.MultipleProcessStartupProvider"
+            android:authorities="${applicationId}.android_startup.multiple"
+            android:exported="false"
+            android:process=":multiple.provider">
+
+            <meta-data
+                android:name="com.rousetime.sample.startup.SampleStartupProviderConfig"
+                android:value="android.startup.provider.config" />
+
+            <meta-data
+                android:name="com.rousetime.sample.startup.multiple.SampleMultipleSecondStartup"
                 android:value="android.startup" />
 
         </provider>

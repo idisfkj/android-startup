@@ -8,7 +8,6 @@ import com.rousetime.android_startup.execption.StartupException
 import com.rousetime.android_startup.extensions.getUniqueKey
 import com.rousetime.android_startup.manager.StartupCacheManager
 import com.rousetime.android_startup.model.StartupProviderStore
-import com.rousetime.android_startup.provider.StartupProvider
 import com.rousetime.android_startup.provider.StartupProviderConfig
 
 /**
@@ -22,7 +21,7 @@ class StartupInitializer {
         val instance by lazy { StartupInitializer() }
     }
 
-    internal fun discoverAndInitialize(context: Context): StartupProviderStore {
+    internal fun discoverAndInitialize(context: Context, providerName: String): StartupProviderStore {
 
         TraceCompat.beginSection(StartupInitializer::class.java.simpleName)
 
@@ -31,7 +30,7 @@ class StartupInitializer {
         val initialized = mutableListOf<String>()
         var config: StartupProviderConfig? = null
         try {
-            val provider = ComponentName(context.packageName, StartupProvider::class.java.name)
+            val provider = ComponentName(context.packageName, providerName)
             val providerInfo = context.packageManager.getProviderInfo(provider, PackageManager.GET_META_DATA)
             val startup = context.getString(R.string.android_startup)
             val providerConfig = context.getString(R.string.android_startup_provider_config)

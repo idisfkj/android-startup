@@ -7,17 +7,16 @@ import android.net.Uri
 import com.rousetime.android_startup.StartupInitializer
 import com.rousetime.android_startup.StartupManager
 import com.rousetime.android_startup.execption.StartupException
-import com.rousetime.android_startup.model.StartupConfig
 
 /**
  * Created by idisfkj on 2020/7/28.
  * Email: idisfkj@gmail.com.
  */
-class StartupProvider : ContentProvider() {
+open class StartupProvider : ContentProvider() {
 
     override fun onCreate(): Boolean {
         context.takeIf { context -> context != null }?.let {
-            val store = StartupInitializer.instance.discoverAndInitialize(it)
+            val store = StartupInitializer.instance.discoverAndInitialize(it, this::class.java.name)
             StartupManager.Builder()
                 .setConfig(store.config?.getConfig())
                 .addAllStartup(store.result)
@@ -34,7 +33,7 @@ class StartupProvider : ContentProvider() {
     }
 
     override fun query(uri: Uri, projection: Array<out String>?, selection: String?, selectionArgs: Array<out String>?, sortOrder: String?): Cursor? {
-        throw IllegalStateException("Not allowed.")
+        return null
     }
 
     override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<out String>?): Int {
