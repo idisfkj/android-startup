@@ -6,22 +6,22 @@ import com.rousetime.android_startup.Startup
 import com.rousetime.android_startup.annotation.MultipleProcess
 
 /**
- * Created by idisfkj on 2020/9/14.
+ * Created by idisfkj on 2020/9/15.
  * Email: idisfkj@gmail.com.
  */
-@MultipleProcess(":multiple.provider")
-class SampleMultipleSecondStartup : AndroidStartup<String>() {
+@MultipleProcess(":multiple.process.service")
+class SampleMultipleSixthStartup : AndroidStartup<String>() {
 
     override fun create(context: Context): String? {
-        return SampleMultipleSecondStartup::class.java.simpleName
+        return SampleMultipleSixthStartup::class.java.simpleName
     }
 
     override fun callCreateOnMainThread(): Boolean = false
 
-    override fun waitOnMainThread(): Boolean = false
+    override fun waitOnMainThread(): Boolean = true
 
     override fun dependencies(): List<Class<out Startup<*>>>? {
-        return arrayListOf(SampleMultipleFirstStartup::class.java)
+        return listOf(SampleMultipleFifthStartup::class.java)
     }
 
 }

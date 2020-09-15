@@ -1,7 +1,13 @@
 package com.rousetime.sample
 
+import android.app.Service
+import android.content.ComponentName
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -21,6 +27,27 @@ import kotlinx.android.synthetic.main.activity_common.*
  */
 class SampleCommonActivity : AppCompatActivity() {
 
+    private var mMultipleProcessService: IMultipleProcessServiceInterface? = null
+
+    private val mMultipleProcessServiceConnection by lazy {
+        object : ServiceConnection {
+            override fun onServiceDisconnected(name: ComponentName?) {}
+
+            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+                mMultipleProcessService = IMultipleProcessServiceInterface.Stub.asInterface(service)
+                mMultipleProcessService?.addServiceListener(object : IServiceListenerInterface.Stub() {
+                    override fun onCompleted(result: String?, totalMainThreadCostTime: Long) {
+                        result?.let {
+                            Handler(Looper.getMainLooper()).post {
+                                showResult(result)
+                            }
+                        }
+                    }
+                })
+                mMultipleProcessService?.initStartup()
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,9 +58,11 @@ class SampleCommonActivity : AppCompatActivity() {
 
     fun onClick(view: View) {
         if (R.id.clear == view.id) {
+            mMultipleProcessService?.clear()
             StartupCacheManager.instance.clear()
             content.text = getString(R.string.clear_cache_success)
         } else if (R.id.get == view.id) {
+            unbindService()
             start()
         }
     }
@@ -69,6 +98,9 @@ class SampleCommonActivity : AppCompatActivity() {
                 list.add(SampleAsyncSevenStartup())
                 list.add(SampleSyncFiveStartup())
             }
+            R.id.multiply_process -> {
+                bindService(Intent(this, MultipleProcessService::class.java), mMultipleProcessServiceConnection, Service.BIND_AUTO_CREATE)
+            }
         }
         val config = StartupConfig.Builder()
             .setLoggerLevel(LoggerLevel.DEBUG)
@@ -76,7 +108,7 @@ class SampleCommonActivity : AppCompatActivity() {
             .setListener(object : StartupListener {
                 override fun onCompleted(totalMainThreadCostTime: Long, costTimesModels: List<CostTimesModel>) {
                     // can to do cost time statistics.
-                    content.text = buildString {
+                    showResult(buildString {
                         append("Startup Completed: ")
                         append("\n")
                         append("\n")
@@ -100,7 +132,7 @@ class SampleCommonActivity : AppCompatActivity() {
                                 append("\n")
                             }
                         }
-                    }
+                    })
                     Log.d("StartupTrack", "onCompleted: ${costTimesModels.size}")
                 }
             })
@@ -116,5 +148,20 @@ class SampleCommonActivity : AppCompatActivity() {
                 .start()
                 .await()
         }, 16)
+    }
+
+    private fun showResult(result: String) {
+        content.text = result
+    }
+
+    private fun unbindService() {
+        mMultipleProcessService?.let {
+            unbindService(mMultipleProcessServiceConnection)
+        }
+    }
+
+    override fun onDestroy() {
+        unbindService()
+        super.onDestroy()
     }
 }

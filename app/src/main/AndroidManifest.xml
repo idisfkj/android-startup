@@ -18,11 +18,13 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".SampleMoreActivity"
-            android:process=":multiple.provider" />
+        <activity android:name=".SampleMoreActivity" />
 
         <activity android:name=".SampleCommonActivity" />
+
+        <service
+            android:name=".MultipleProcessService"
+            android:process=":multiple.process.service" />
 
         <provider
             android:name="com.rousetime.android_startup.provider.StartupProvider"
