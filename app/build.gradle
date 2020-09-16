@@ -34,9 +34,9 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation project(':android-startup')
+//    implementation project(':android-startup')
 
-//    implementation Dependencies.android_startup
+    implementation Dependencies.android_startup
 
     implementation Dependencies.kotlin_stdlib
     implementation Dependencies.core_ktx

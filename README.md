@@ -33,7 +33,7 @@ Android Startup提供一种在应用启动时能够更加简单、高效的方�
 
 ```
 dependencies {
-    implementation 'com.rousetime.android:android-startup:1.0.3'
+    implementation 'com.rousetime.android:android-startup:1.0.4'
 }
 ```
 
