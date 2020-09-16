@@ -19,6 +19,9 @@ import com.rousetime.android_startup.model.CostTimesModel
 import com.rousetime.android_startup.model.LoggerLevel
 import com.rousetime.android_startup.model.StartupConfig
 import com.rousetime.sample.startup.*
+import com.rousetime.sample.startup.priority.SamplePriorityFirstStartup
+import com.rousetime.sample.startup.priority.SamplePrioritySecondStartup
+import com.rousetime.sample.startup.priority.SamplePriorityThirdStartup
 import kotlinx.android.synthetic.main.activity_common.*
 
 /**
@@ -97,6 +100,11 @@ class SampleCommonActivity : AppCompatActivity() {
                 list.add(SampleManualDispatchStartup())
                 list.add(SampleAsyncSevenStartup())
                 list.add(SampleSyncFiveStartup())
+            }
+            R.id.thread_priority -> {
+                list.add(SamplePriorityThirdStartup())
+                list.add(SamplePrioritySecondStartup())
+                list.add(SamplePriorityFirstStartup())
             }
             R.id.multiply_process -> {
                 bindService(Intent(this, MultipleProcessService::class.java), mMultipleProcessServiceConnection, Service.BIND_AUTO_CREATE)

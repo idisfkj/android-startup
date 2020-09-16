@@ -83,6 +83,19 @@
         app:layout_constraintTop_toBottomOf="@+id/async_and_async_await_main_thread" />
 
     <Button
+        android:id="@+id/thread_priority"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:onClick="onClick"
+        android:text="@string/thread_priority"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/manual_dispatch" />
+
+    <Button
         android:id="@+id/multiply_process"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -93,6 +106,6 @@
         android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/manual_dispatch" />
+        app:layout_constraintTop_toBottomOf="@+id/thread_priority" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
