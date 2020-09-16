@@ -22,12 +22,17 @@ Here is a piece of with Google [App Startup](https://developer.android.com/topic
 |Support Dependencies| ✅ | ✅ |
 |Handle Circle| ✅ | ✅ |
 |Thread Of Control| ❌ | ✅ |
-|Async await| ❌ | ✅ |
+|Async Await| ❌ | ✅ |
 |Callback Dependencies| ❌ | ✅ |
 |Manual Notify| ❌ | ✅ |
-|Topology optimization| ❌ | ✅ |
+|Topology Optimization| ❌ | ✅ |
+|Thread Priority| ❌ | ✅ |
+|Multiple Processes| ❌ | ✅ |
 
 > Open source is not easy, I hope friends shake hands, a star in the upper right corner, thank you🙏
+
+# Related Articles
+[Android Startup Analysis](https://medium.com/@idisfkj/android-startup-analysis-8ce7560f3672)
 
 # Setup
 Add the following dependency to your `build.gradle` file:
@@ -331,6 +336,12 @@ override fun onCreate() {
 
 * `clear()`: Remove all the component initialization cache the results.
 
+## [Annotation](https://github.com/idisfkj/android-startup/tree/master/android-startup/src/main/java/com/rousetime/android_startup/annotation)
+
+* ThreadPriority: Set 'Startup' to initialize thread priority.
+
+* MultipleProcess: The process on which 'Startup' is initialized.
+
 # Sample
 
 * [Sync And Sync](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): Synchronization and synchronization depend on the scene.
@@ -344,6 +355,10 @@ override fun onCreate() {
 * [Async And Async Await Main Thread](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): Asynchronous with asynchronous rely on wait in the main thread.
 
 * [Manual Dispatch](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): Manually inform rely on the complete scene.
+
+* [Thread Priority](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): Scenarios for changing thread priorities.
+
+* [Multiple Processes](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): Multi-process initialization scenarios.
 
 # License
 Please see [LICENSE](https://github.com/idisfkj/android-startup/blob/master/LICENSE)

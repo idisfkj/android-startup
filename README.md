@@ -25,8 +25,13 @@ Android Startup提供一种在应用启动时能够更加简单、高效的方�
 |依赖回调| ❌ | ✅ |
 |手动通知| ❌ | ✅ |
 |拓扑优化| ❌ | ✅ |
+|线程优先级| ❌ | ✅ |
+|多进程| ❌ | ✅ |
 
 > 开源不易，希望朋友小手一抖，右上角来个star，感谢🙏
+
+# 相关文章
+[Android Startup实现分析](https://juejin.im/post/6871006041262260237)
 
 # 添加依赖
 将下面的依赖添加到`build.gradle`文件中:
@@ -331,6 +336,12 @@ override fun onCreate() {
 
 * `clear()`: 清除所有组件初始化的缓存结果。
 
+## [Annotation](https://github.com/idisfkj/android-startup/tree/master/android-startup/src/main/java/com/rousetime/android_startup/annotation)
+
+* ThreadPriority: 设置`Startup`初始化的线程优先级。
+
+* MultipleProcess: 设置`Startup`初始化时所在的进程。
+
 # 示例
 
 * [Sync And Sync](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): 同步与同步依赖的场景
@@ -344,6 +355,10 @@ override fun onCreate() {
 * [Async And Async Await Main Thread](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): 异步与异步依赖在主线程等候的场景
 
 * [Manual Dispatch](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): 手动通知依赖完成的场景
+
+* [Thread Priority](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): 改变线程优先级的场景
+
+* [Multiple Processes](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): 多进程初始化的场景
 
 # 实战测试
 [AwesomeGithub](https://github.com/idisfkj/AwesomeGithub)中使用了`Android Startup`，优化配置的初始化时间与组件化开发的配置注入时机，使用前与使用后时间对比:
