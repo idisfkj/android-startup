@@ -1,8 +1,10 @@
 package com.rousetime.android_startup.run
 
 import android.content.Context
+import android.os.Process
 import androidx.core.os.TraceCompat
 import com.rousetime.android_startup.Startup
+import com.rousetime.android_startup.annotation.ThreadPriority
 import com.rousetime.android_startup.dispatcher.ManagerDispatcher
 import com.rousetime.android_startup.manager.StartupCacheManager
 import com.rousetime.android_startup.model.StartupSortStore
@@ -21,6 +23,7 @@ internal class StartupRunnable(
 ) : Runnable {
 
     override fun run() {
+        Process.setThreadPriority(startup::class.java.getAnnotation(ThreadPriority::class.java)?.priority ?: Process.THREAD_PRIORITY_DEFAULT)
         startup.toWait()
         StartupLogUtils.d("${startup::class.java.simpleName} being create.")
 
