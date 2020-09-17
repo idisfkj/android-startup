@@ -53,7 +53,7 @@ internal class StartupManagerDispatcher(
 
     override fun notifyChildren(dependencyParent: Startup<*>, result: Any?, sortStore: StartupSortStore) {
         // immediately notify main thread,Unblock the main thread.
-        if (dependencyParent.waitOnMainThread()) {
+        if (dependencyParent.waitOnMainThread() && !dependencyParent.callCreateOnMainThread()) {
             needAwaitCount.incrementAndGet()
             awaitCountDownLatch?.countDown()
         }
