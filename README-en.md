@@ -39,7 +39,7 @@ Add the following dependency to your `build.gradle` file:
 
 ```
 dependencies {
-    implementation 'com.rousetime.android:android-startup:1.0.4'
+    implementation 'com.rousetime.android:android-startup:1.0.5'
 }
 ```
 
