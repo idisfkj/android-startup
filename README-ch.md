@@ -1,4 +1,4 @@
-English｜[中文](README.md)
+中文｜[English](README.md)
 
 # android-startup
 [![Author](https://img.shields.io/badge/Author-idisfkj-orange.svg)](https://idisfkj.github.io/archives/)
@@ -9,33 +9,32 @@ English｜[中文](README.md)
 [![Code Size](https://img.shields.io/github/languages/code-size/idisfkj/android-startup?color=%23CDDC39)]()
 [![License](https://img.shields.io/badge/license-Apache%202-green.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
-The Android Startup library provides a straightforward, performant way to initialize components at application startup. Both library developers and app developers can use Android Startup to streamline startup sequences and explicitly set the order of initialization.
+Android Startup提供一种在应用启动时能够更加简单、高效的方式来初始化组件。开发人员可以使用Android Startup来简化启动序列，并显式地设置初始化顺序与组件之间的依赖关系。
+与此同时，Android Startup支持**同步与异步等待**，并通过有向无环图[拓扑排序](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/sort/TopologySort.kt)的方式来保证内部依赖组件的初始化顺序。
 
-At the same time, the Android Startup support **async await and sync await**. And [topological ordering](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/sort/TopologySort.kt) is used to ensure the initialization order of dependent components.
+下面是一张与google的[App Startup](https://developer.android.com/topic/libraries/app-startup)功能对比的表格。
 
-Here is a piece of with Google [App Startup](https://developer.android.com/topic/libraries/app-startup) feature comparison table.
-
-|indicator|App Startup|Android Startup|
+|指标|App Startup|Android Startup|
 |:---:|:------:| :------:|
-|Manually Config| ✅ | ✅ |
-|Automatic Config| ✅ | ✅ |
-|Support Dependencies| ✅ | ✅ |
-|Handle Circle| ✅ | ✅ |
-|Thread Of Control| ❌ | ✅ |
-|Async Await| ❌ | ✅ |
-|Callback Dependencies| ❌ | ✅ |
-|Manual Notify| ❌ | ✅ |
-|Topology Optimization| ❌ | ✅ |
-|Thread Priority| ❌ | ✅ |
-|Multiple Processes| ❌ | ✅ |
+|手动配置| ✅ | ✅ |
+|自动配置| ✅ | ✅ |
+|依赖支持| ✅ | ✅ |
+|闭环处理| ✅ | ✅ |
+|线程控制| ❌ | ✅ |
+|异步等待| ❌ | ✅ |
+|依赖回调| ❌ | ✅ |
+|手动通知| ❌ | ✅ |
+|拓扑优化| ❌ | ✅ |
+|线程优先级| ❌ | ✅ |
+|多进程| ❌ | ✅ |
 
-> Open source is not easy, I hope friends shake hands, a star in the upper right corner, thank you🙏
+> 开源不易，希望朋友小手一抖，右上角来个star，感谢🙏
 
-# Related Articles
-[Android Startup Analysis](https://medium.com/@idisfkj/android-startup-analysis-8ce7560f3672)
+# 相关文章
+[Android Startup实现分析](https://juejin.im/post/6871006041262260237)
 
-# Setup
-Add the following dependency to your `build.gradle` file:
+# 添加依赖
+将下面的依赖添加到`build.gradle`文件中:
 
 ```
 dependencies {
@@ -43,27 +42,26 @@ dependencies {
 }
 ```
 
-> Versions update information: [Release](https://github.com/idisfkj/android-startup/releases)
+> 依赖版本的更新信息: [Release](https://github.com/idisfkj/android-startup/releases)
 
-# Quick Usage
+# 快速使用
 
 ![](./images/android_startup_diagram.png)
 
-There are tow ways of using android-startup in your project,need to be initialized before using android-startup.
+android-startup提供了两种使用方式，在使用之前需要先定义初始化的组件。
 
-## Define Initialize components
-You define each component initializer by creating a class that implements the [AndroidStartup<T>](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/AndroidStartup.kt) abstract.
-This abstract implements the `Startup<T>` interface. And this abstract defines four important methods:
+## 定义初始化的组件
+每一个初始化的组件都需要实现[AndroidStartup<T>](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/AndroidStartup.kt)抽象类，它实现了`Startup<T>`接口，它主要有以下四个抽象方法：
 
-* The `callCreateOnMainThread(): Boolean`method,which control the `create()`method is in the main thread calls.Othrewise in the other thread.
+* `callCreateOnMainThread(): Boolean`用来控制`create()`方法调时所在的线程，返回true代表在主线程执行。
 
-* The `waitOnMainThread(): Boolean`method,which control the current component should call waiting in the main thread.If returns true, will block the main thread.
+* `waitOnMainThread(): Boolean`用来控制当前初始化的组件是否需要在主线程进行等待其完成。如果返回true，将在主线程等待，并且阻塞主线程。
 
-* The `create(): T?`method,which contains all of the necessary operations to initialize the component and returns an instance of `T`
+* `create(): T?`组件初始化方法，执行需要处理的初始化逻辑，支持返回一个`T`类型的实例。
 
-* The `dependencies(): List<Class<out Startup<*>>>?`method,which returns a list of the other `Startup<*>` objects that the initializer depends on.
+* `dependencies(): List<Class<out Startup<*>>>?`返回`Startup<*>`类型的list集合。用来表示当前组件在执行之前需要依赖的组件。
 
-For example, Define a `SampleFirstStartup` class that implements `AndroidStartup<String>`:
+例如，下面定义一个`SampleFirstStartup`类来实现`AndroidStartup<String>`抽象类:
 
 ```
 class SampleFirstStartup : AndroidStartup<String>() {
@@ -83,9 +81,11 @@ class SampleFirstStartup : AndroidStartup<String>() {
 
 }
 ```
-The `dependencies()` method returns an null list because `SampleFirstStartup ` does not depend on any other libraries.
+因为`SampleFirstStartup`在执行之前不需要依赖其它组件，所以它的`dependencies()`方法可以返回空，同时它会在主线程中执行。
 
-Suppose that your app also depends on a library called `SampleSecondStartup`, which in turn depends on `SampleFirstStartup`. This dependency means that you need to make sure that Android Startup initializes `SampleFirstStartup ` first.
+> 注意：️虽然`waitOnMainThread()`返回了`false`，但由于它是在主线程中执行，而主线程默认是阻塞的，所以`callCreateOnMainThread()`返回`true`时，该方法设置将失效。
+
+假设你还需要定义`SampleSecondStartup`，它依赖于`SampleFirstStartup`。这意味着在执行`SampleSecondStartup`之前`SampleFirstStartup`必须先执行完毕。
 
 ```
 class SampleSecondStartup : AndroidStartup<Boolean>() {
@@ -95,7 +95,7 @@ class SampleSecondStartup : AndroidStartup<Boolean>() {
     override fun waitOnMainThread(): Boolean = true
 
     override fun create(context: Context): Boolean {
-        // Simulation execution time.
+        // 模仿执行耗时
         Thread.sleep(5000)
         return true
     }
@@ -106,15 +106,16 @@ class SampleSecondStartup : AndroidStartup<Boolean>() {
 
 }
 ```
-Because you include `SampleFirstStartup` in the `dependencies()` method, Android Startup initializes `SampleFirstStartup` before `SampleSecondStartup`.
+在`dependencies()`方法中返回了`SampleFirstStartup`，所以它能保证`SampleFirstStartup`优先执行完毕。
+它会在子线程中执行，但由于`waitOnMainThread()`返回了`true`，所以主线程会阻塞等待直到它执行完毕。
 
-For example, you also define a [SampleThirdStartup](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/startup/SampleThirdStartup.kt) and a [SampleFourthStartup](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/startup/SampleFourthStartup.kt)
+例如，你还定义了[SampleThirdStartup](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/startup/SampleThirdStartup.kt)与[SampleFourthStartup](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/startup/SampleFourthStartup.kt)
 
-## Automatic initialization in manifest
-The first one is automatic initializes startup in manifest.
+## Manifest中自动配置
+第一种初始化方法是在Manifest中进行自动配置。
 
-Android Startup includes a special content provider called `StartupProvider` that it uses to discover and call your component startup.
-In order for it to automatically identify, need in `StartupProvider` defined in the `<meta-data>` label.The `name` as defined by the component class, `value` values corresponding to the `android.startup`.
+在Android Startup中提供了`StartupProvider`类，它是一个特殊的content provider，提供自动识别在manifest中配置的初始化组件。
+为了让其能够自动识别，需要在`StartupProvider`中定义`<meta-data>`标签。其中的`name`为定义的组件类，`value`的值对应为`android.startup`。
 
 ```
 <provider
@@ -128,14 +129,14 @@ In order for it to automatically identify, need in `StartupProvider` defined in 
 
 </provider>
 ```
-You don't need to add a `<meta-data>` entry for `SampleFirstStartup`, `SampleSecondStartup` and `SampleThirdStartup`, because them are a dependency of `SampleFourthStartup`. This means that if `SampleFourthStartup` is discoverable, then are also.
+你不需要将`SampleFirstStartup`、`SampleSecondStartup`与`SampleThirdStartup`添加到`<meta-data>`标签中。这是因为在`SampleFourthStartup`中，它的`dependencies()`中依赖了这些组件。`StartupProvider`会自动识别已经声明的组件中依赖的其它组件。
 
-## Manually initialization in application
-The second one is manually initializes startup in application.
+## Application中手动配置
+第二种初始化方法是在Application进行手动配置。
 
-Consider again the example,to make sure Android Startup can initializes,you can use `StartupManager.Builder()` directly in order to manually initialize components.
+手动初始化需要使用到`StartupManager.Builder()`。
 
-For example, the following code calls `StartupManager.Builder()` and manually initializes them:
+例如，如下代码使用`StartupManager.Builder()`进行初始化配置。
 
 ```
 class SampleApplication : Application() {
@@ -153,11 +154,11 @@ class SampleApplication : Application() {
     }
 }
 ```
-You can check out the sample [app](https://github.com/idisfkj/android-startup/tree/master/app) for more code information.
+完整的示例代码，你可以通过查看[app](https://github.com/idisfkj/android-startup/tree/master/app)获取。
 
-Run the example code, the console will produce the log as follows:
+运行示例代码，控制台将会产生如下日志:
 
-1. After the initialization sequence sorting optimization
+1. 排序优化之后的初始化顺序
 
 ```
 *****/com.rousetime.sample D/StartupTrack: TopologySort result:
@@ -204,7 +205,7 @@ Run the example code, the console will produce the log as follows:
     |================================================================
 ```
 
-2. Consumed components initialization times
+2. 各组件初始化所消耗的时间
 
 ```
 *****/com.rousetime.sample D/StartupTrack: startup cost times detail:
@@ -245,19 +246,18 @@ Run the example code, the console will produce the log as follows:
     |=================================================================
 ```
 
+# 更多
 
-# More
+## 可选配置
 
-## Optional Config
+* [LoggerLevel](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/model/LoggerLevel.kt): 控制Android Startup中的日志输出，可选值包括`LoggerLevel.NONE`, `LoggerLevel.ERROR` and `LoggerLevel.DEBUG`。
 
-* [LoggerLevel](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/model/LoggerLevel.kt): control Android Startup log level, include `LoggerLevel.NONE`, `LoggerLevel.ERROR` and `LoggerLevel.DEBUG`.
+* [AwaitTimeout](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/model/StartupConfig.kt): 控制Android Startup中主线程的超时等待时间，即阻塞的最长时间。
 
-* [AwaitTimeout](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/model/StartupConfig.kt): control Android Startup timeout of await on main thread.
+* [StartupListener](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/StartupListener.kt): Android Startup监听器，所有组件初始化完成之后该监听器会被调用。
 
-* [StartupListener](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/StartupListener.kt): Android Startup listener, all the component initialization completes the listener will be called.
-
-### config in manifest
-To use these config, you must define a class than implements the `StartupProviderConfig` interface:
+### Manifest中配置
+使用这些配置，你需要定义一个类去实现`StartupProviderConfig`接口，并且实现它的对应方法。
 
 ```
 class SampleStartupProviderConfig : StartupProviderConfig {
@@ -274,7 +274,7 @@ class SampleStartupProviderConfig : StartupProviderConfig {
             .build()
 }
 ```
-At the same time, you need add `StartupProviderConfig` to manifest file:
+与此同时，你还需要在manifest中进行配置`StartupProviderConfig`。
 
 ```
 <provider
@@ -288,10 +288,10 @@ At the same time, you need add `StartupProviderConfig` to manifest file:
 
 </provider>
 ```
-`StartupProvider` that it uses to discover and call `SampleStartupProviderConfig`.
+经过上面的配置，`StartupProvider`会自动解析`SampleStartupProviderConfig`。
 
-### config in application
-To use these config,you need use `StartupManager.Builder()` in application.
+### Application中配置
+在Application需要借助`StartupManager.Builder()`进行配置。
 
 ```
 override fun onCreate() {
@@ -318,47 +318,55 @@ override fun onCreate() {
 
 ## [AndroidStartup](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/AndroidStartup.kt)
 
-* `createExecutor(): Executor`: If the startup not create on main thread, them the startup will run in the executor.
+* `createExecutor(): Executor`: 如果定义的组件没有运行在主线程，那么可以通过该方法进行控制运行的子线程。
 
-* `onDependenciesCompleted(startup: Startup<*>, result: Any?)`: This method is called whenever there is a dependency completion.
+* `onDependenciesCompleted(startup: Startup<*>, result: Any?)`: 该方法会在每一个依赖执行完毕之后进行回调。
 
-* `manualDispatch(): Boolean`: Returns true that manual to dispatch. but must be call `onDispatch()`, in order to notify children that dependencies startup completed.
+* `manualDispatch(): Boolean`: 返回`true`时，代表需要手动去通知依赖自身的子组件; 需要配合`onDispatch()`来使用。
 
-* `onDispatch()`: Start to dispatch when `manualDispatch()` return true.
+* `onDispatch()`: 配合`manualDispatch()`使用，通知依赖自身的子组件，开始执行子组件的初始化逻辑。
 
 ## [StartupCacheManager](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/manager/StartupCacheManager.kt)
 
-* `hadInitialized(zClass: Class<out Startup<*>>)`: Check whether the corresponding component initialization has been completed.
+* `hadInitialized(zClass: Class<out Startup<*>>)`: 检验对应的组件是否已经初始化完成。
 
-* `obtainInitializedResult(zClass: Class<out Startup<*>>): T?`: Obtain corresponding components of has been initialized the returned results.
+* `obtainInitializedResult(zClass: Class<out Startup<*>>): T?`: 获取对应已经初始化的组件所返回的结果。
 
-* `remove(zClass: Class<out Startup<*>>)`: To get rid of the corresponding component initialization cache the results.
+* `remove(zClass: Class<out Startup<*>>)`: 清除对应组件的初始化缓存结果。
 
-* `clear()`: Remove all the component initialization cache the results.
+* `clear()`: 清除所有组件初始化的缓存结果。
 
 ## [Annotation](https://github.com/idisfkj/android-startup/tree/master/android-startup/src/main/java/com/rousetime/android_startup/annotation)
 
-* ThreadPriority: Set 'Startup' to initialize thread priority.
+* ThreadPriority: 设置`Startup`初始化的线程优先级。
 
-* MultipleProcess: The process on which 'Startup' is initialized.
+* MultipleProcess: 设置`Startup`初始化时所在的进程。
 
-# Sample
+# 示例
 
-* [Sync And Sync](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): Synchronization and synchronization depend on the scene.
+* [Sync And Sync](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): 同步与同步依赖的场景
 
-* [Sync And Async](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): Synchronous and asynchronous depend on the scene.
+* [Sync And Async](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): 同步与异步依赖的场景
 
-* [Async And Sync](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): Asynchronous and synchronous depend on the scene.
+* [Async And Sync](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): 异步与同步依赖的场景
 
-* [Async And Async](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): Asynchronous and asynchronous depend on the scene.
+* [Async And Async](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): 异步与异步依赖的场景
 
-* [Async And Async Await Main Thread](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): Asynchronous with asynchronous rely on wait in the main thread.
+* [Async And Async Await Main Thread](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): 异步与异步依赖在主线程等候的场景
 
-* [Manual Dispatch](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): Manually inform rely on the complete scene.
+* [Manual Dispatch](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): 手动通知依赖完成的场景
 
-* [Thread Priority](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): Scenarios for changing thread priorities.
+* [Thread Priority](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): 改变线程优先级的场景
 
-* [Multiple Processes](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): Multi-process initialization scenarios.
+* [Multiple Processes](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): 多进程初始化的场景
+
+# 实战测试
+[AwesomeGithub](https://github.com/idisfkj/AwesomeGithub)中使用了`Android Startup`，优化配置的初始化时间与组件化开发的配置注入时机，使用前与使用后时间对比:
+
+|状态|启动页面|消耗时间|
+|---|------| ------|
+|使用前|WelcomeActivity|420ms|
+|使用后|WelcomeActivity|333ms|
 
 # License
-Please see [LICENSE](https://github.com/idisfkj/android-startup/blob/master/LICENSE)
+请查看[LICENSE](https://github.com/idisfkj/android-startup/blob/master/LICENSE)。
