@@ -30,10 +30,10 @@ Android Startup提供一种在应用启动时能够更加简单、高效的方�
 
 > 开源不易，希望朋友小手一抖，右上角来个star，感谢🙏
 
-# 相关文章
+## 相关文章
 [Android Startup实现分析](https://juejin.im/post/6871006041262260237)
 
-# 添加依赖
+## 添加依赖
 将下面的依赖添加到`build.gradle`文件中:
 
 ```
@@ -44,13 +44,13 @@ dependencies {
 
 > 依赖版本的更新信息: [Release](https://github.com/idisfkj/android-startup/releases)
 
-# 快速使用
+## 快速使用
 
 ![](./images/android_startup_diagram.png)
 
 android-startup提供了两种使用方式，在使用之前需要先定义初始化的组件。
 
-## 定义初始化的组件
+### 定义初始化的组件
 每一个初始化的组件都需要实现[AndroidStartup<T>](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/AndroidStartup.kt)抽象类，它实现了`Startup<T>`接口，它主要有以下四个抽象方法：
 
 * `callCreateOnMainThread(): Boolean`用来控制`create()`方法调时所在的线程，返回true代表在主线程执行。
@@ -111,7 +111,7 @@ class SampleSecondStartup : AndroidStartup<Boolean>() {
 
 例如，你还定义了[SampleThirdStartup](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/startup/SampleThirdStartup.kt)与[SampleFourthStartup](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/startup/SampleFourthStartup.kt)
 
-## Manifest中自动配置
+### Manifest中自动配置
 第一种初始化方法是在Manifest中进行自动配置。
 
 在Android Startup中提供了`StartupProvider`类，它是一个特殊的content provider，提供自动识别在manifest中配置的初始化组件。
@@ -131,7 +131,7 @@ class SampleSecondStartup : AndroidStartup<Boolean>() {
 ```
 你不需要将`SampleFirstStartup`、`SampleSecondStartup`与`SampleThirdStartup`添加到`<meta-data>`标签中。这是因为在`SampleFourthStartup`中，它的`dependencies()`中依赖了这些组件。`StartupProvider`会自动识别已经声明的组件中依赖的其它组件。
 
-## Application中手动配置
+### Application中手动配置
 第二种初始化方法是在Application进行手动配置。
 
 手动初始化需要使用到`StartupManager.Builder()`。
@@ -246,9 +246,9 @@ class SampleApplication : Application() {
     |=================================================================
 ```
 
-# 更多
+## 更多
 
-## 可选配置
+### 可选配置
 
 * [LoggerLevel](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/model/LoggerLevel.kt): 控制Android Startup中的日志输出，可选值包括`LoggerLevel.NONE`, `LoggerLevel.ERROR` and `LoggerLevel.DEBUG`。
 
@@ -256,7 +256,7 @@ class SampleApplication : Application() {
 
 * [StartupListener](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/StartupListener.kt): Android Startup监听器，所有组件初始化完成之后该监听器会被调用。
 
-### Manifest中配置
+#### Manifest中配置
 使用这些配置，你需要定义一个类去实现`StartupProviderConfig`接口，并且实现它的对应方法。
 
 ```
@@ -290,7 +290,7 @@ class SampleStartupProviderConfig : StartupProviderConfig {
 ```
 经过上面的配置，`StartupProvider`会自动解析`SampleStartupProviderConfig`。
 
-### Application中配置
+#### Application中配置
 在Application需要借助`StartupManager.Builder()`进行配置。
 
 ```
@@ -316,7 +316,7 @@ override fun onCreate() {
 }
 ```
 
-## [AndroidStartup](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/AndroidStartup.kt)
+### [AndroidStartup](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/AndroidStartup.kt)
 
 * `createExecutor(): Executor`: 如果定义的组件没有运行在主线程，那么可以通过该方法进行控制运行的子线程。
 
@@ -326,7 +326,7 @@ override fun onCreate() {
 
 * `onDispatch()`: 配合`manualDispatch()`使用，通知依赖自身的子组件，开始执行子组件的初始化逻辑。
 
-## [StartupCacheManager](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/manager/StartupCacheManager.kt)
+### [StartupCacheManager](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/manager/StartupCacheManager.kt)
 
 * `hadInitialized(zClass: Class<out Startup<*>>)`: 检验对应的组件是否已经初始化完成。
 
@@ -336,13 +336,13 @@ override fun onCreate() {
 
 * `clear()`: 清除所有组件初始化的缓存结果。
 
-## [Annotation](https://github.com/idisfkj/android-startup/tree/master/android-startup/src/main/java/com/rousetime/android_startup/annotation)
+### [Annotation](https://github.com/idisfkj/android-startup/tree/master/android-startup/src/main/java/com/rousetime/android_startup/annotation)
 
 * ThreadPriority: 设置`Startup`初始化的线程优先级。
 
 * MultipleProcess: 设置`Startup`初始化时所在的进程。
 
-# 示例
+## 示例
 
 * [Sync And Sync](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): 同步与同步依赖的场景
 
@@ -360,7 +360,7 @@ override fun onCreate() {
 
 * [Multiple Processes](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): 多进程初始化的场景
 
-# 实战测试
+## 实战测试
 [AwesomeGithub](https://github.com/idisfkj/AwesomeGithub)中使用了`Android Startup`，优化配置的初始化时间与组件化开发的配置注入时机，使用前与使用后时间对比:
 
 |状态|启动页面|消耗时间|
@@ -368,5 +368,11 @@ override fun onCreate() {
 |使用前|WelcomeActivity|420ms|
 |使用后|WelcomeActivity|333ms|
 
-# License
+## 联系我
+微信搜索公众号【Android补给站】或者扫描下方二维码
+
+![](./images/wx.jpg)
+
+
+## License
 请查看[LICENSE](https://github.com/idisfkj/android-startup/blob/master/LICENSE)。

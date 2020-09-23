@@ -31,10 +31,10 @@ Here is a piece of with Google [App Startup](https://developer.android.com/topic
 
 > Open source is not easy, I hope friends shake hands, a star in the upper right corner, thank you🙏
 
-# Related Articles
+## Related Articles
 [Android Startup Analysis](https://medium.com/@idisfkj/android-startup-analysis-8ce7560f3672)
 
-# Setup
+## Setup
 Add the following dependency to your `build.gradle` file:
 
 ```
@@ -45,13 +45,13 @@ dependencies {
 
 > Versions update information: [Release](https://github.com/idisfkj/android-startup/releases)
 
-# Quick Usage
+## Quick Usage
 
 ![](./images/android_startup_diagram.png)
 
 There are tow ways of using android-startup in your project,need to be initialized before using android-startup.
 
-## Define Initialize components
+### Define Initialize components
 You define each component initializer by creating a class that implements the [AndroidStartup<T>](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/AndroidStartup.kt) abstract.
 This abstract implements the `Startup<T>` interface. And this abstract defines four important methods:
 
@@ -110,7 +110,7 @@ Because you include `SampleFirstStartup` in the `dependencies()` method, Android
 
 For example, you also define a [SampleThirdStartup](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/startup/SampleThirdStartup.kt) and a [SampleFourthStartup](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/startup/SampleFourthStartup.kt)
 
-## Automatic initialization in manifest
+### Automatic initialization in manifest
 The first one is automatic initializes startup in manifest.
 
 Android Startup includes a special content provider called `StartupProvider` that it uses to discover and call your component startup.
@@ -130,7 +130,7 @@ In order for it to automatically identify, need in `StartupProvider` defined in 
 ```
 You don't need to add a `<meta-data>` entry for `SampleFirstStartup`, `SampleSecondStartup` and `SampleThirdStartup`, because them are a dependency of `SampleFourthStartup`. This means that if `SampleFourthStartup` is discoverable, then are also.
 
-## Manually initialization in application
+### Manually initialization in application
 The second one is manually initializes startup in application.
 
 Consider again the example,to make sure Android Startup can initializes,you can use `StartupManager.Builder()` directly in order to manually initialize components.
@@ -246,9 +246,9 @@ Run the example code, the console will produce the log as follows:
 ```
 
 
-# More
+## More
 
-## Optional Config
+### Optional Config
 
 * [LoggerLevel](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/model/LoggerLevel.kt): control Android Startup log level, include `LoggerLevel.NONE`, `LoggerLevel.ERROR` and `LoggerLevel.DEBUG`.
 
@@ -256,7 +256,7 @@ Run the example code, the console will produce the log as follows:
 
 * [StartupListener](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/StartupListener.kt): Android Startup listener, all the component initialization completes the listener will be called.
 
-### config in manifest
+#### config in manifest
 To use these config, you must define a class than implements the `StartupProviderConfig` interface:
 
 ```
@@ -290,7 +290,7 @@ At the same time, you need add `StartupProviderConfig` to manifest file:
 ```
 `StartupProvider` that it uses to discover and call `SampleStartupProviderConfig`.
 
-### config in application
+#### config in application
 To use these config,you need use `StartupManager.Builder()` in application.
 
 ```
@@ -316,7 +316,7 @@ override fun onCreate() {
 }
 ```
 
-## [AndroidStartup](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/AndroidStartup.kt)
+### [AndroidStartup](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/AndroidStartup.kt)
 
 * `createExecutor(): Executor`: If the startup not create on main thread, them the startup will run in the executor.
 
@@ -326,7 +326,7 @@ override fun onCreate() {
 
 * `onDispatch()`: Start to dispatch when `manualDispatch()` return true.
 
-## [StartupCacheManager](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/manager/StartupCacheManager.kt)
+### [StartupCacheManager](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/manager/StartupCacheManager.kt)
 
 * `hadInitialized(zClass: Class<out Startup<*>>)`: Check whether the corresponding component initialization has been completed.
 
@@ -336,13 +336,13 @@ override fun onCreate() {
 
 * `clear()`: Remove all the component initialization cache the results.
 
-## [Annotation](https://github.com/idisfkj/android-startup/tree/master/android-startup/src/main/java/com/rousetime/android_startup/annotation)
+### [Annotation](https://github.com/idisfkj/android-startup/tree/master/android-startup/src/main/java/com/rousetime/android_startup/annotation)
 
 * ThreadPriority: Set `Startup` to initialize thread priority.
 
 * MultipleProcess: The process on which `Startup` is initialized.
 
-# Sample
+## Sample
 
 * [Sync And Sync](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): Synchronization and synchronization depend on the scene.
 
@@ -360,5 +360,5 @@ override fun onCreate() {
 
 * [Multiple Processes](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/SampleCommonActivity.kt): Multi-process initialization scenarios.
 
-# License
+## License
 Please see [LICENSE](https://github.com/idisfkj/android-startup/blob/master/LICENSE)
