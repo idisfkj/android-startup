@@ -31,6 +31,9 @@ Android Startup提供一种在应用启动时能够更加简单、高效的方�
 > 开源不易，希望朋友小手一抖，右上角来个star，感谢🙏
 
 ## 相关文章
+
+[我为何弃用Jetpack的App Startup?](https://juejin.im/post/6859500445669752846)
+
 [Android Startup实现分析](https://juejin.im/post/6871006041262260237)
 
 ## 添加依赖
@@ -373,6 +376,9 @@ override fun onCreate() {
 
 ![](./images/wx.jpg)
 
+QQ交流群
+
+<img src="./images/qq.png" width = "258" height = "353" alt="" align=center />
 
 ## License
 请查看[LICENSE](https://github.com/idisfkj/android-startup/blob/master/LICENSE)。

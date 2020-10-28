@@ -32,6 +32,9 @@ Here is a piece of with Google [App Startup](https://developer.android.com/topic
 > Open source is not easy, I hope friends shake hands, a star in the upper right corner, thank you🙏
 
 ## Related Articles
+
+[Why I abandoned the Jetpack App Startup?](https://medium.com/@idisfkj/why-i-abandoned-the-jetpack-app-startup-9963bd8865ef)
+
 [Android Startup Analysis](https://medium.com/@idisfkj/android-startup-analysis-8ce7560f3672)
 
 ## Setup
