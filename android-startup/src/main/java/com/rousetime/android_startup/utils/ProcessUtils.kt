@@ -23,5 +23,12 @@ internal object ProcessUtils {
 
     fun isMainProcess(context: Context): Boolean = getProcessName(context) == context.packageName
 
-    fun isMultipleProcess(context: Context, processName: String): Boolean = getProcessName(context) == "${context.packageName}$processName"
+    fun isMultipleProcess(context: Context, processName: Array<out String>): Boolean {
+        processName.forEach {
+            if (getProcessName(context) == "${context.packageName}$it") {
+                return true
+            }
+        }
+        return false
+    }
 }

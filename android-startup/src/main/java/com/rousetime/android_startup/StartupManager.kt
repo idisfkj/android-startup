@@ -138,8 +138,8 @@ class StartupManager private constructor(
         fun build(context: Context): StartupManager {
             val realStartupList = mutableListOf<AndroidStartup<*>>()
             mStartupList.forEach {
-                val process = it::class.java.getAnnotation(MultipleProcess::class.java)?.process ?: ""
-                if ((TextUtils.isEmpty(process) && ProcessUtils.isMainProcess(context)) || ProcessUtils.isMultipleProcess(context, process)) {
+                val process = it::class.java.getAnnotation(MultipleProcess::class.java)?.process ?: arrayOf()
+                if (process.isNullOrEmpty() || ProcessUtils.isMultipleProcess(context, process)) {
                     realStartupList.add(it)
                     if (it.waitOnMainThread() && !it.callCreateOnMainThread()) {
                         mNeedAwaitCount.incrementAndGet()

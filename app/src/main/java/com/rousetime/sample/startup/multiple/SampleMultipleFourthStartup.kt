@@ -8,7 +8,7 @@ import com.rousetime.android_startup.annotation.MultipleProcess
  * Created by idisfkj on 2020/9/15.
  * Email: idisfkj@gmail.com.
  */
-@MultipleProcess(":multiple.process.service")
+@MultipleProcess(":multiple.process.service", ":multiple.test")
 class SampleMultipleFourthStartup : AndroidStartup<String>() {
 
     override fun create(context: Context): String? {
