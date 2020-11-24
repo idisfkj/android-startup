@@ -15,7 +15,7 @@ class SamplePrioritySecondStartup : AndroidStartup<String>() {
                 append("$it")
             }
         }
-        return SamplePrioritySecondStartup::class.java.simpleName + " => $i"
+        return SamplePrioritySecondStartup::class.java.simpleName
     }
 
     override fun callCreateOnMainThread(): Boolean = false
