@@ -9,9 +9,9 @@ English｜[中文](README-ch.md)
 [![Code Size](https://img.shields.io/github/languages/code-size/idisfkj/android-startup?color=%23CDDC39)]()
 [![License](https://img.shields.io/badge/license-Apache%202-green.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
-The Android Startup library provides a straightforward, performant way to initialize components at application startup. Both library developers and app developers can use Android Startup to streamline startup sequences and explicitly set the order of initialization.
+The `android-startup` library provides a straightforward, performant way to initialize components at application startup. Both library developers and app developers can use `android-startup` to streamline startup sequences and explicitly set the order of initialization.
 
-At the same time, the Android Startup support **async await and sync await**. And [topological ordering](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/sort/TopologySort.kt) is used to ensure the initialization order of dependent components.
+At the same time, the `android-startup` support **async await and sync await**. And [topological ordering](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/sort/TopologySort.kt) is used to ensure the initialization order of dependent components.
 
 Here is a piece of with Google [App Startup](https://developer.android.com/topic/libraries/app-startup) feature comparison table.
 
@@ -26,6 +26,7 @@ Here is a piece of with Google [App Startup](https://developer.android.com/topic
 |Callback Dependencies| ❌ | ✅ |
 |Manual Notify| ❌ | ✅ |
 |Topology Optimization| ❌ | ✅ |
+|Time Cost Statistics| ❌ | ✅ |
 |Thread Priority| ❌ | ✅ |
 |Multiple Processes| ❌ | ✅ |
 
