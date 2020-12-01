@@ -37,6 +37,8 @@
 
 [Android Startup实现分析](https://juejin.im/post/6871006041262260237)
 
+[Android Startup最新进展](https://mp.weixin.qq.com/s?__biz=MzIzNTc5NDY4Nw==&mid=2247484784&idx=1&sn=435833fade53cfbe62bf5b3e98e60d59&chksm=e8e0fce0df9775f65748debdfc1b8f5013970d92c7e76ea2c7436240438c278fb62bfbbc6cf3&token=630713225&lang=zh_CN#rd)
+
 ## 添加依赖
 将下面的依赖添加到`build.gradle`文件中:
 
