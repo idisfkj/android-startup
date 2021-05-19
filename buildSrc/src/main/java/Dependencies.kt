@@ -43,5 +43,6 @@ object Dependencies {
     val addRepos: (handler: RepositoryHandler) -> Unit = {
         it.google()
         it.jcenter()
+        it.mavenCentral()
     }
 }
