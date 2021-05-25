@@ -20,7 +20,7 @@ object Versions {
     const val ext_junit = "1.1.1"
     const val espresso_core = "3.2.0"
     const val constraint_layout = "1.1.3"
-    const val android_startup = "1.0.6"
+    const val android_startup = "1.0.62"
 
     const val gradle_bintray_plugin = "1.6"
     const val android_maven_gradle_plugin = "1.5"
@@ -38,11 +38,10 @@ object Dependencies {
     const val constraint_layout = "androidx.constraintlayout:constraintlayout:${Versions.constraint_layout}"
     const val gradle_bintray_plugin = "com.jfrog.bintray.gradle:gradle-bintray-plugin:${Versions.gradle_bintray_plugin}"
     const val android_maven_gradle_plugin = "com.github.dcendents:android-maven-gradle-plugin:${Versions.android_maven_gradle_plugin}"
-    const val android_startup = "com.rousetime.android:android-startup:${Versions.android_startup}"
+    const val android_startup = "io.github.idisfkj:android-startup:${Versions.android_startup}"
 
     val addRepos: (handler: RepositoryHandler) -> Unit = {
         it.google()
         it.jcenter()
-        it.mavenCentral()
     }
 }
