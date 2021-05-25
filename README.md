@@ -42,8 +42,12 @@ Here is a piece of with Google [App Startup](https://developer.android.com/topic
 Add the following dependency to your `build.gradle` file:
 
 ```
+repositories {
+    mavenCentral()
+}
+
 dependencies {
-    implementation 'com.rousetime.android:android-startup:1.0.6'
+    implementation 'io.github.idisfkj:android-startup:1.0.62'
 }
 ```
 

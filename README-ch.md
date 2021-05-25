@@ -43,8 +43,12 @@
 将下面的依赖添加到`build.gradle`文件中:
 
 ```
+repositories {
+    mavenCentral()
+}
+
 dependencies {
-    implementation 'com.rousetime.android:android-startup:1.0.6'
+    implementation 'io.github.idisfkj:android-startup:1.0.62'
 }
 ```
 
