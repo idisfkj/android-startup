@@ -16,8 +16,9 @@ class SampleStartupProviderConfig : StartupProviderConfig {
 
     override fun getConfig(): StartupConfig =
         StartupConfig.Builder()
-            .setLoggerLevel(LoggerLevel.DEBUG)
-            .setAwaitTimeout(12000L)
+            .setLoggerLevel(LoggerLevel.DEBUG) // default LoggerLevel.NONE
+            .setAwaitTimeout(12000L) // default 10000L
+            .setOpenStatistics(true) // default true
             .setListener(object : StartupListener {
                 override fun onCompleted(totalMainThreadCostTime: Long, costTimesModels: List<CostTimesModel>) {
                     // can to do cost time statistics.
