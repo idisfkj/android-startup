@@ -2,6 +2,7 @@ package com.rousetime.android_startup.utils
 
 import com.rousetime.android_startup.Startup
 import com.rousetime.android_startup.extensions.getUniqueKey
+import com.rousetime.android_startup.manager.StartupCacheManager
 import com.rousetime.android_startup.model.CostTimesModel
 
 /**
@@ -21,23 +22,29 @@ internal object StartupCostTimesUtils {
         get() = (endTime ?: System.nanoTime()) - startTime
 
     fun recordStart(startup: Class<out Startup<*>>, callOnMainThread: Boolean, waitOnMainThread: Boolean) {
-        costTimesMap[startup.getUniqueKey()] = CostTimesModel(
-            startup.simpleName,
-            callOnMainThread,
-            waitOnMainThread,
-            System.nanoTime() / ACCURACY
-        )
+        if (checkOpenStatistics()) {
+            costTimesMap[startup.getUniqueKey()] = CostTimesModel(
+                startup.simpleName,
+                callOnMainThread,
+                waitOnMainThread,
+                System.nanoTime() / ACCURACY
+            )
+        }
     }
 
     fun recordEnd(startup: Class<out Startup<*>>) {
-        costTimesMap[startup.getUniqueKey()]?.let {
-            it.endTime = System.nanoTime() / ACCURACY
+        if (checkOpenStatistics()) {
+            costTimesMap[startup.getUniqueKey()]?.let {
+                it.endTime = System.nanoTime() / ACCURACY
+            }
         }
     }
 
     fun clear() {
-        endTime = null
-        costTimesMap.clear()
+        if (checkOpenStatistics()) {
+            endTime = null
+            costTimesMap.clear()
+        }
     }
 
     fun printAll() {
@@ -69,4 +76,6 @@ internal object StartupCostTimesUtils {
             append("|=================================================================")
         })
     }
+
+    private fun checkOpenStatistics() = StartupCacheManager.instance.initializedConfig?.openStatistic == true
 }
