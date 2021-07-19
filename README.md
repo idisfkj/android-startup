@@ -258,11 +258,13 @@ Run the example code, the console will produce the log as follows:
 
 ### Optional Config
 
-* [LoggerLevel](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/model/LoggerLevel.kt): control Android Startup log level, include `LoggerLevel.NONE`, `LoggerLevel.ERROR` and `LoggerLevel.DEBUG`.
+* [LoggerLevel](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/model/LoggerLevel.kt): Control Android Startup log level, include `LoggerLevel.NONE`, `LoggerLevel.ERROR` and `LoggerLevel.DEBUG`.
 
-* [AwaitTimeout](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/model/StartupConfig.kt): control Android Startup timeout of await on main thread.
+* [AwaitTimeout](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/model/StartupConfig.kt): Control Android Startup timeout of await on main thread.
 
 * [StartupListener](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/StartupListener.kt): Android Startup listener, all the component initialization completes the listener will be called.
+
+* [OpenStatistic](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/model/StartupConfig.kt): Control the elapsed time statistics for each Android Startup task.
 
 #### config in manifest
 To use these config, you must define a class than implements the `StartupProviderConfig` interface:
@@ -272,8 +274,9 @@ class SampleStartupProviderConfig : StartupProviderConfig {
 
     override fun getConfig(): StartupConfig =
         StartupConfig.Builder()
-            .setLoggerLevel(LoggerLevel.DEBUG)
-            .setAwaitTimeout(12000L)
+            .setLoggerLevel(LoggerLevel.DEBUG) // default LoggerLevel.NONE
+            .setAwaitTimeout(12000L) // default 10000L
+            .setOpenStatistics(true) // default true
             .setListener(object : StartupListener {
                 override fun onCompleted(totalMainThreadCostTime: Long, costTimesModels: List<CostTimesModel>) {
                     // can to do cost time statistics.

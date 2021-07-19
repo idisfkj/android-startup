@@ -266,6 +266,8 @@ class SampleApplication : Application() {
 
 * [StartupListener](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/StartupListener.kt): Android Startup监听器，所有组件初始化完成之后该监听器会被调用。
 
+* [OpenStatistic](https://github.com/idisfkj/android-startup/blob/master/android-startup/src/main/java/com/rousetime/android_startup/model/StartupConfig.kt): 控制Android Startup是否开启对各个任务的耗时统计。
+
 #### Manifest中配置
 使用这些配置，你需要定义一个类去实现`StartupProviderConfig`接口，并且实现它的对应方法。
 
@@ -274,8 +276,9 @@ class SampleStartupProviderConfig : StartupProviderConfig {
 
     override fun getConfig(): StartupConfig =
         StartupConfig.Builder()
-            .setLoggerLevel(LoggerLevel.DEBUG)
-            .setAwaitTimeout(12000L)
+            .setLoggerLevel(LoggerLevel.DEBUG) // default LoggerLevel.NONE
+            .setAwaitTimeout(12000L) // default 10000L
+            .setOpenStatistics(true) // default true
             .setListener(object : StartupListener {
                 override fun onCompleted(totalMainThreadCostTime: Long, costTimesModels: List<CostTimesModel>) {
                     // can to do cost time statistics.
