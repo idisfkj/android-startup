@@ -4,6 +4,7 @@ import com.rousetime.android_startup.Startup
 import com.rousetime.android_startup.extensions.getUniqueKey
 import com.rousetime.android_startup.manager.StartupCacheManager
 import com.rousetime.android_startup.model.CostTimesModel
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Created by idisfkj on 2020/8/10.
@@ -11,7 +12,7 @@ import com.rousetime.android_startup.model.CostTimesModel
  */
 internal object StartupCostTimesUtils {
 
-    val costTimesMap = mutableMapOf<String, CostTimesModel>()
+    val costTimesMap = ConcurrentHashMap<String, CostTimesModel>()
 
     private const val ACCURACY = 1000 * 1000L
 

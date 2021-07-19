@@ -1,7 +1,9 @@
 package com.rousetime.android_startup.manager
 
 import com.rousetime.android_startup.Startup
+import com.rousetime.android_startup.model.ResultModel
 import com.rousetime.android_startup.model.StartupConfig
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Created by idisfkj on 2020/8/11.
@@ -12,7 +14,7 @@ class StartupCacheManager {
     /**
      * Save initialized components result.
      */
-    private val mInitializedComponents = mutableMapOf<Class<out Startup<*>>, Any?>()
+    private val mInitializedComponents = ConcurrentHashMap<Class<out Startup<*>>, ResultModel<*>>()
     var initializedConfig: StartupConfig? = null
         private set
 
@@ -24,17 +26,17 @@ class StartupCacheManager {
     /**
      * save result of initialized component.
      */
-    internal fun saveInitializedComponent(zClass: Class<out Startup<*>>, result: Any?) {
+    internal fun saveInitializedComponent(zClass: Class<out Startup<*>>, result: ResultModel<*>) {
         mInitializedComponents[zClass] = result
     }
 
     /**
      * check initialized.
      */
-    fun hadInitialized(zClass: Class<out Startup<*>>): Boolean = mInitializedComponents.contains(zClass)
+    fun hadInitialized(zClass: Class<out Startup<*>>): Boolean = mInitializedComponents.containsKey(zClass)
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> obtainInitializedResult(zClass: Class<out Startup<*>>): T? = mInitializedComponents[zClass] as T?
+    fun <T> obtainInitializedResult(zClass: Class<out Startup<*>>): T? = mInitializedComponents[zClass]?.result as? T?
 
     fun remove(zClass: Class<out Startup<*>>) {
         mInitializedComponents.remove(zClass)
