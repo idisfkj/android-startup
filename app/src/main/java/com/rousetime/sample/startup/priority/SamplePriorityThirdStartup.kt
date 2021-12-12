@@ -2,7 +2,7 @@ package com.rousetime.sample.startup.priority
 
 import android.content.Context
 import android.os.Process
-import com.rousetime.android_startup.AndroidStartup
+import com.rousetime.sample.ClassIdAndroidStartup as AndroidStartup
 import com.rousetime.android_startup.annotation.ThreadPriority
 
 /**

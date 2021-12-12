@@ -10,6 +10,8 @@ import android.os.Process
  */
 internal object ProcessUtils {
 
+    private lateinit var curProcessName: String
+
     private fun getProcessName(context: Context): String {
         val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         val myPid = Process.myPid()
@@ -24,8 +26,12 @@ internal object ProcessUtils {
     fun isMainProcess(context: Context): Boolean = getProcessName(context) == context.packageName
 
     fun isMultipleProcess(context: Context, processName: Array<out String>): Boolean {
+        if (!this::curProcessName.isInitialized) {
+            curProcessName = getProcessName(context)
+        }
+
         processName.forEach {
-            if (getProcessName(context) == "${context.packageName}$it") {
+            if (curProcessName == "${context.packageName}$it") {
                 return true
             }
         }

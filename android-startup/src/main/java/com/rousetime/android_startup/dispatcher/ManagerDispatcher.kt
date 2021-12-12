@@ -7,7 +7,7 @@ import com.rousetime.android_startup.model.StartupSortStore
  * Created by idisfkj on 2020/7/27.
  * Email: idisfkj@gmail.com.
  */
-interface ManagerDispatcher {
+internal interface ManagerDispatcher {
 
     /**
      * dispatch prepare

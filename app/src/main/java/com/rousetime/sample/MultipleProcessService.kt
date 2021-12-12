@@ -6,7 +6,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
-import com.rousetime.android_startup.AndroidStartup
+import com.rousetime.sample.ClassIdAndroidStartup as AndroidStartup
 import com.rousetime.android_startup.StartupListener
 import com.rousetime.android_startup.StartupManager
 import com.rousetime.android_startup.manager.StartupCacheManager
@@ -78,7 +78,7 @@ class MultipleProcessService : Service() {
 
                 StartupManager.Builder()
                     .setConfig(config)
-                    .addAllStartup(list)
+                    .setAllStartup(list)
                     .build(this@MultipleProcessService)
                     .start()
                     .await()

@@ -10,6 +10,8 @@ import com.rousetime.android_startup.executor.StartupExecutor
  */
 interface Startup<T> : Dispatcher, StartupExecutor {
 
+    val id: String
+
     /**
      * Contains all of the necessary operations to initialize the component.
      * and returns an instance of `T`
@@ -21,7 +23,7 @@ interface Startup<T> : Dispatcher, StartupExecutor {
     /**
      * Returns a list of the other [Startup] objects that the initializer depends on.
      */
-    fun dependencies(): List<Class<out Startup<*>>>?
+    fun dependencyIds(): List<String>?
 
     /**
      * Called whenever there is a dependency completion.
@@ -30,6 +32,8 @@ interface Startup<T> : Dispatcher, StartupExecutor {
      * @param [result] of dependencies startup.
      */
     fun onDependenciesCompleted(startup: Startup<*>, result: Any?)
+
+    fun onAllCompleted()
 
     /**
      * Returns true that manual to dispatch. but must be call [onDispatch], in order to notify children that dependencies startup completed.

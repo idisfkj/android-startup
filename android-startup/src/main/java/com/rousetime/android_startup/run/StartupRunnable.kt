@@ -29,9 +29,9 @@ internal class StartupRunnable(
         StartupLogUtils.d("${startup::class.java.simpleName} being create.")
 
         TraceCompat.beginSection(startup::class.java.simpleName)
-        StartupCostTimesUtils.recordStart(startup::class.java, startup.callCreateOnMainThread(), startup.waitOnMainThread())
+        StartupCostTimesUtils.recordStart(startup, startup.callCreateOnMainThread(), startup.waitOnMainThread())
         val result = startup.create(context)
-        StartupCostTimesUtils.recordEnd(startup::class.java)
+        StartupCostTimesUtils.recordEnd(startup)
         TraceCompat.endSection()
 
         // To save result of initialized component.

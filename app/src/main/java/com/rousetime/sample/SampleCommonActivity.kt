@@ -11,7 +11,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.rousetime.android_startup.AndroidStartup
+import com.rousetime.sample.ClassIdAndroidStartup as AndroidStartup
 import com.rousetime.android_startup.StartupListener
 import com.rousetime.android_startup.StartupManager
 import com.rousetime.android_startup.manager.StartupCacheManager
@@ -151,7 +151,7 @@ class SampleCommonActivity : AppCompatActivity() {
         Handler().postDelayed({
             StartupManager.Builder()
                 .setConfig(config)
-                .addAllStartup(list)
+                .setAllStartup(list)
                 .build(this)
                 .start()
                 .await()

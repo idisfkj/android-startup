@@ -2,7 +2,6 @@ package com.rousetime.android_startup
 
 import android.content.Context
 import android.os.Looper
-import android.text.TextUtils
 import androidx.core.os.TraceCompat
 import com.rousetime.android_startup.annotation.MultipleProcess
 import com.rousetime.android_startup.dispatcher.StartupManagerDispatcher
@@ -24,10 +23,10 @@ import java.util.concurrent.atomic.AtomicInteger
  * Email : idisfkj@gmail.com.
  */
 class StartupManager private constructor(
-    private val context: Context,
-    private val startupList: List<AndroidStartup<*>>,
-    private val needAwaitCount: AtomicInteger,
-    private val config: StartupConfig
+        private val context: Context,
+        private val startupList: List<AndroidStartup<*>>,
+        private val needAwaitCount: AtomicInteger,
+        private val config: StartupConfig
 ) {
 
     private var mAwaitCountDownLatch: CountDownLatch? = null
@@ -105,17 +104,22 @@ class StartupManager private constructor(
     }
 
     class Builder {
-        private var mStartupList = mutableListOf<AndroidStartup<*>>()
+        private var mStartupMap = mutableMapOf<String, AndroidStartup<*>>()
         private var mNeedAwaitCount = AtomicInteger()
         private var mLoggerLevel = LoggerLevel.NONE
         private var mAwaitTimeout = AWAIT_TIMEOUT
         private var mConfig: StartupConfig? = null
 
         fun addStartup(startup: AndroidStartup<*>) = apply {
-            mStartupList.add(startup)
+            val existed = mStartupMap[startup.id]
+            if (existed != null) {
+                throw IllegalStateException("both ${startup::class.qualifiedName} and ${existed::class.qualifiedName} have same id,please check their id,or you add same instance more than one times.")
+            }
+
+            mStartupMap[startup.id] = startup
         }
 
-        fun addAllStartup(list: List<AndroidStartup<*>>) = apply {
+        fun setAllStartup(list: List<AndroidStartup<*>>) = apply {
             list.forEach {
                 addStartup(it)
             }
@@ -135,12 +139,29 @@ class StartupManager private constructor(
             mAwaitTimeout = timeoutMilliSeconds
         }
 
+        private fun MutableMap<String, AndroidStartup<*>>.buildStartUp(allStartUpMap: Map<String, AndroidStartup<*>>, startup: AndroidStartup<*>) {
+            startup.dependencyIds()
+                    ?.forEach { dependencyId ->
+                        val dependencyStartup = allStartUpMap[dependencyId]
+                                ?: throw IllegalStateException("can not find dependency which id is $dependencyId,please check it in ${startup::class.qualifiedName}.")
+
+                        if (!containsKey(dependencyId)) {
+                            this[dependencyId] = dependencyStartup
+                        }
+                    }
+            this[startup.id] = startup
+        }
+
         fun build(context: Context): StartupManager {
-            val realStartupList = mutableListOf<AndroidStartup<*>>()
-            mStartupList.forEach {
-                val process = it::class.java.getAnnotation(MultipleProcess::class.java)?.process ?: arrayOf()
+            val realStartupMap = mutableMapOf<String, AndroidStartup<*>>()
+
+            mStartupMap.values.forEach {
+                val process = it::class.java.getAnnotation(MultipleProcess::class.java)?.process
+                        ?: arrayOf()
+
                 if (process.isNullOrEmpty() || ProcessUtils.isMultipleProcess(context, process)) {
-                    realStartupList.add(it)
+                    realStartupMap.buildStartUp(mStartupMap, it)
+
                     if (it.waitOnMainThread() && !it.callCreateOnMainThread()) {
                         mNeedAwaitCount.incrementAndGet()
                     }
@@ -148,13 +169,13 @@ class StartupManager private constructor(
             }
 
             return StartupManager(
-                context,
-                realStartupList,
-                mNeedAwaitCount,
-                mConfig ?: StartupConfig.Builder()
-                    .setLoggerLevel(mLoggerLevel)
-                    .setAwaitTimeout(mAwaitTimeout)
-                    .build()
+                    context,
+                    realStartupMap.values.toList(),
+                    mNeedAwaitCount,
+                    mConfig ?: StartupConfig.Builder()
+                            .setLoggerLevel(mLoggerLevel)
+                            .setAwaitTimeout(mAwaitTimeout)
+                            .build()
             )
         }
     }

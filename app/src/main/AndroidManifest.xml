@@ -36,7 +36,23 @@
                 android:value="android.startup.provider.config" />
 
             <meta-data
+                android:name="com.rousetime.sample.startup.SampleFirstStartup"
+                android:value="android.startup" />
+
+            <meta-data
+                android:name="com.rousetime.sample.startup.SampleSecondStartup"
+                android:value="android.startup" />
+
+            <meta-data
+                android:name="com.rousetime.sample.startup.SampleThirdStartup"
+                android:value="android.startup" />
+
+            <meta-data
                 android:name="com.rousetime.sample.startup.SampleFourthStartup"
+                android:value="android.startup" />
+
+            <meta-data
+                android:name="com.rousetime.sample.startup.multiple.SampleMultipleFirstStartup"
                 android:value="android.startup" />
 
         </provider>
@@ -53,6 +69,11 @@
 
             <meta-data
                 android:name="com.rousetime.sample.startup.multiple.SampleMultipleSecondStartup"
+                android:value="android.startup" />
+
+
+            <meta-data
+                android:name="com.rousetime.sample.startup.multiple.SampleMultipleFirstStartup"
                 android:value="android.startup" />
 
         </provider>

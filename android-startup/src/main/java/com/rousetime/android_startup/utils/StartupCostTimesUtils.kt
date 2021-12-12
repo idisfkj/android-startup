@@ -1,7 +1,6 @@
 package com.rousetime.android_startup.utils
 
 import com.rousetime.android_startup.Startup
-import com.rousetime.android_startup.extensions.getUniqueKey
 import com.rousetime.android_startup.manager.StartupCacheManager
 import com.rousetime.android_startup.model.CostTimesModel
 import java.util.concurrent.ConcurrentHashMap
@@ -22,20 +21,20 @@ internal object StartupCostTimesUtils {
     val mainThreadTimes
         get() = (endTime ?: System.nanoTime()) - startTime
 
-    fun recordStart(startup: Class<out Startup<*>>, callOnMainThread: Boolean, waitOnMainThread: Boolean) {
+    fun recordStart(startup: Startup<*>, callOnMainThread: Boolean, waitOnMainThread: Boolean) {
         if (checkOpenStatistics()) {
-            costTimesMap[startup.getUniqueKey()] = CostTimesModel(
-                startup.simpleName,
-                callOnMainThread,
-                waitOnMainThread,
-                System.nanoTime() / ACCURACY
+            costTimesMap[startup.id] = CostTimesModel(
+                    startup::class.java.simpleName,
+                    callOnMainThread,
+                    waitOnMainThread,
+                    System.nanoTime() / ACCURACY
             )
         }
     }
 
-    fun recordEnd(startup: Class<out Startup<*>>) {
+    fun recordEnd(startup: Startup<*>) {
         if (checkOpenStatistics()) {
-            costTimesMap[startup.getUniqueKey()]?.let {
+            costTimesMap[startup.id]?.let {
                 it.endTime = System.nanoTime() / ACCURACY
             }
         }

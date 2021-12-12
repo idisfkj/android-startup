@@ -2,7 +2,7 @@ package com.rousetime.sample.startup
 
 import android.content.Context
 import android.util.Log
-import com.rousetime.android_startup.AndroidStartup
+import com.rousetime.sample.ClassIdAndroidStartup as AndroidStartup
 import com.rousetime.android_startup.Startup
 
 /**

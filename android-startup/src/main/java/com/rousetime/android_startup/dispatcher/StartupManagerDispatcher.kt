@@ -4,7 +4,6 @@ import android.content.Context
 import com.rousetime.android_startup.Startup
 import com.rousetime.android_startup.StartupListener
 import com.rousetime.android_startup.executor.ExecutorManager
-import com.rousetime.android_startup.extensions.getUniqueKey
 import com.rousetime.android_startup.manager.StartupCacheManager
 import com.rousetime.android_startup.model.StartupSortStore
 import com.rousetime.android_startup.run.StartupRunnable
@@ -18,11 +17,11 @@ import java.util.concurrent.atomic.AtomicInteger
  * Email: idisfkj@gmail.com.
  */
 internal class StartupManagerDispatcher(
-    private val context: Context,
-    private val needAwaitCount: AtomicInteger,
-    private val awaitCountDownLatch: CountDownLatch?,
-    private val startupSize: Int,
-    private val listener: StartupListener?
+        private val context: Context,
+        private val needAwaitCount: AtomicInteger,
+        private val awaitCountDownLatch: CountDownLatch?,
+        private val startupSize: Int,
+        private val listener: StartupListener?
 ) : ManagerDispatcher {
 
     private var count: AtomicInteger? = null
@@ -58,7 +57,7 @@ internal class StartupManagerDispatcher(
             awaitCountDownLatch?.countDown()
         }
 
-        sortStore.startupChildrenMap[dependencyParent::class.java.getUniqueKey()]?.forEach {
+        sortStore.startupChildrenMap[dependencyParent.id]?.forEach {
             sortStore.startupMap[it]?.run {
                 onDependenciesCompleted(dependencyParent, result)
 
@@ -73,6 +72,9 @@ internal class StartupManagerDispatcher(
         if (size == startupSize) {
             StartupCostTimesUtils.printAll()
             listener?.let {
+                sortStore.result.forEach {
+                    it.onAllCompleted()
+                }
                 ExecutorManager.instance.mainExecutor.execute {
                     it.onCompleted(StartupCostTimesUtils.mainThreadTimes, StartupCostTimesUtils.costTimesMap.values.toList())
                 }

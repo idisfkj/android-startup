@@ -3,7 +3,6 @@ package com.rousetime.android_startup.sort
 import androidx.core.os.TraceCompat
 import com.rousetime.android_startup.Startup
 import com.rousetime.android_startup.execption.StartupException
-import com.rousetime.android_startup.extensions.getUniqueKey
 import com.rousetime.android_startup.model.StartupSortStore
 import com.rousetime.android_startup.utils.StartupLogUtils
 import java.util.*
@@ -26,21 +25,20 @@ internal object TopologySort {
         val inDegreeMap = hashMapOf<String, Int>()
 
         startupList.forEach {
-            val uniqueKey = it::class.java.getUniqueKey()
+            val uniqueKey = it.id
             if (!startupMap.containsKey(uniqueKey)) {
                 startupMap[uniqueKey] = it
                 // save in-degree
-                inDegreeMap[uniqueKey] = it.dependencies()?.size ?: 0
-                if (it.dependencies().isNullOrEmpty()) {
+                inDegreeMap[uniqueKey] = it.dependencyIds()?.size ?: 0
+                if (it.dependencyIds().isNullOrEmpty()) {
                     zeroDeque.offer(uniqueKey)
                 } else {
                     // add key parent, value list children
-                    it.dependencies()?.forEach { parent ->
-                        val parentUniqueKey = parent.getUniqueKey()
-                        if (startupChildrenMap[parentUniqueKey] == null) {
-                            startupChildrenMap[parentUniqueKey] = arrayListOf()
+                    it.dependencyIds()?.forEach { parent ->
+                        if (startupChildrenMap[parent] == null) {
+                            startupChildrenMap[parent] = arrayListOf()
                         }
-                        startupChildrenMap[parentUniqueKey]?.add(uniqueKey)
+                        startupChildrenMap[parent]?.add(uniqueKey)
                     }
                 }
             } else {
@@ -103,7 +101,7 @@ internal object TopologySort {
                 append("\n")
                 append("|----------------------------------------------------------------")
                 append("\n")
-                append("|   Dependencies size    |    ${it.dependencies()?.size ?: 0}")
+                append("|   Dependencies size    |    ${it.dependencyIds()?.size ?: 0}")
                 append("\n")
                 append("|----------------------------------------------------------------")
                 append("\n")

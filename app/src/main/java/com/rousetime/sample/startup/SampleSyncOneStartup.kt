@@ -1,7 +1,8 @@
 package com.rousetime.sample.startup
 
 import android.content.Context
-import com.rousetime.android_startup.AndroidStartup
+import android.util.Log
+import com.rousetime.sample.ClassIdAndroidStartup as AndroidStartup
 
 /**
  * Created by idisfkj on 2020/8/17.
