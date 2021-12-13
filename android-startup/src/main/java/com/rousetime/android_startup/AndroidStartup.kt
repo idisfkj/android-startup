@@ -14,6 +14,8 @@ abstract class AndroidStartup<T> : Startup<T> {
     private val mWaitCountDown by lazy { CountDownLatch(dependencyIds()?.size ?: 0) }
     private val mObservers by lazy { mutableListOf<Dispatcher>() }
 
+    override val id: String = javaClass.name
+
     override fun toWait() {
         try {
             mWaitCountDown.await()
