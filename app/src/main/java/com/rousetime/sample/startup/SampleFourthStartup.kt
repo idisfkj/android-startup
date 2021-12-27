@@ -19,11 +19,11 @@ class SampleFourthStartup : AndroidStartup<Any>() {
         return null
     }
 
-    override fun dependencies(): List<Class<out Startup<*>>>? {
+    override fun dependenciesByName(): List<String> {
         return listOf(
-            SampleFirstStartup::class.java,
-            SampleSecondStartup::class.java,
-            SampleThirdStartup::class.java
+            "com.rousetime.sample.startup.SampleFirstStartup",
+            "com.rousetime.sample.startup.SampleSecondStartup",
+            "com.rousetime.sample.startup.SampleThirdStartup"
         )
     }
 }

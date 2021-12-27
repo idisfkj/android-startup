@@ -21,8 +21,8 @@ class SampleAsyncThreeStartup : AndroidStartup<String>() {
 
     override fun waitOnMainThread(): Boolean = false
 
-    override fun dependencies(): List<Class<out Startup<*>>>? {
-        return listOf(SampleAsyncFiveStartup::class.java)
+    override fun dependenciesByName(): List<String> {
+        return listOf("com.rousetime.sample.startup.SampleAsyncFiveStartup")
     }
 
     override fun onDependenciesCompleted(startup: Startup<*>, result: Any?) {

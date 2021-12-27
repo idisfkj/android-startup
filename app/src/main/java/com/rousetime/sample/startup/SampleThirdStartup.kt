@@ -20,10 +20,10 @@ class SampleThirdStartup : AndroidStartup<Long>() {
         return 10L
     }
 
-    override fun dependencies(): List<Class<out Startup<*>>>? {
+    override fun dependenciesByName(): List<String> {
         return listOf(
-            SampleFirstStartup::class.java,
-            SampleSecondStartup::class.java
+            "com.rousetime.sample.startup.SampleFirstStartup",
+            "com.rousetime.sample.startup.SampleSecondStartup"
         )
     }
 

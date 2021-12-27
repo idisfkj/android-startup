@@ -20,8 +20,8 @@ class SampleMultipleFifthStartup : AndroidStartup<String>() {
 
     override fun waitOnMainThread(): Boolean = false
 
-    override fun dependencies(): List<Class<out Startup<*>>>? {
-        return listOf(SampleMultipleFourthStartup::class.java)
+    override fun dependenciesByName(): List<String> {
+        return listOf("com.rousetime.sample.startup.multiple.SampleMultipleFourthStartup")
     }
 
 }

@@ -26,8 +26,8 @@ class SampleSecondStartup : AndroidStartup<Boolean>() {
         return ExecutorManager.instance.cpuExecutor
     }
 
-    override fun dependencies(): List<Class<out Startup<*>>>? {
-        return listOf(SampleFirstStartup::class.java)
+    override fun dependenciesByName(): List<String> {
+        return listOf("com.rousetime.sample.startup.SampleFirstStartup")
     }
 
     override fun onDependenciesCompleted(startup: Startup<*>, result: Any?) {
