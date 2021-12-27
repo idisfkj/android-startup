@@ -125,6 +125,6 @@ internal object TopologySort {
                 append("|================================================================")
             }
         }
-        StartupLogUtils.d(printBuilder)
+        StartupLogUtils.d { printBuilder }
     }
 }

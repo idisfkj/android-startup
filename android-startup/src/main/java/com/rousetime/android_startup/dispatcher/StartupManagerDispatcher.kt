@@ -33,12 +33,12 @@ internal class StartupManagerDispatcher(
     }
 
     override fun dispatch(startup: Startup<*>, sortStore: StartupSortStore) {
-        StartupLogUtils.d("${startup::class.java.simpleName} being dispatching, onMainThread ${startup.callCreateOnMainThread()}.")
+        StartupLogUtils.d { "${startup::class.java.simpleName} being dispatching, onMainThread ${startup.callCreateOnMainThread()}." }
 
         if (StartupCacheManager.instance.hadInitialized(startup::class.java)) {
             val result = StartupCacheManager.instance.obtainInitializedResult<Any>(startup::class.java)
 
-            StartupLogUtils.d("${startup::class.java.simpleName} was completed, result from cache.")
+            StartupLogUtils.d { "${startup::class.java.simpleName} was completed, result from cache." }
 
             notifyChildren(startup, result, sortStore)
         } else {

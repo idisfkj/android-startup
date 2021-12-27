@@ -53,7 +53,7 @@ class StartupManager private constructor(
         mAwaitCountDownLatch = CountDownLatch(needAwaitCount.get())
 
         if (startupList.isNullOrEmpty()) {
-            StartupLogUtils.e("startupList is empty in the current process.")
+            StartupLogUtils.e { "startupList is empty in the current process." }
             return@apply
         }
 

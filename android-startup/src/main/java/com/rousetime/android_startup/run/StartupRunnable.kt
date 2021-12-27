@@ -26,17 +26,17 @@ internal class StartupRunnable(
     override fun run() {
         Process.setThreadPriority(startup::class.java.getAnnotation(ThreadPriority::class.java)?.priority ?: Process.THREAD_PRIORITY_DEFAULT)
         startup.toWait()
-        StartupLogUtils.d("${startup::class.java.simpleName} being create.")
+        StartupLogUtils.d { "${startup::class.java.simpleName} being create." }
 
         TraceCompat.beginSection(startup::class.java.simpleName)
-        StartupCostTimesUtils.recordStart(startup::class.java, startup.callCreateOnMainThread(), startup.waitOnMainThread())
+        StartupCostTimesUtils.recordStart { Triple(startup::class.java, startup.callCreateOnMainThread(), startup.waitOnMainThread()) }
         val result = startup.create(context)
-        StartupCostTimesUtils.recordEnd(startup::class.java)
+        StartupCostTimesUtils.recordEnd { startup::class.java }
         TraceCompat.endSection()
 
         // To save result of initialized component.
         StartupCacheManager.instance.saveInitializedComponent(startup::class.java, ResultModel(result))
-        StartupLogUtils.d("${startup::class.java.simpleName} was completed.")
+        StartupLogUtils.d { "${startup::class.java.simpleName} was completed." }
 
         dispatcher.notifyChildren(startup, result, sortStore)
     }

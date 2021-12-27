@@ -13,12 +13,12 @@ internal object StartupLogUtils {
     private const val TAG = "StartupTrack"
     var level: LoggerLevel = LoggerLevel.NONE
 
-    fun e(message: String) {
-        if (level >= LoggerLevel.ERROR) print(Log.ERROR, TAG, message)
+    fun e(block: () -> String) {
+        if (level >= LoggerLevel.ERROR) print(Log.ERROR, TAG, block())
     }
 
-    fun d(message: String) {
-        if (level >= LoggerLevel.DEBUG) print(Log.DEBUG, TAG, message)
+    fun d(block: () -> String) {
+        if (level >= LoggerLevel.DEBUG) print(Log.DEBUG, TAG, block())
     }
 
     /**

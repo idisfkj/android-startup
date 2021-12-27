@@ -22,20 +22,22 @@ internal object StartupCostTimesUtils {
     val mainThreadTimes
         get() = (endTime ?: System.nanoTime()) - startTime
 
-    fun recordStart(startup: Class<out Startup<*>>, callOnMainThread: Boolean, waitOnMainThread: Boolean) {
+    fun recordStart(block: () -> Triple<Class<out Startup<*>>, Boolean, Boolean>) {
         if (checkOpenStatistics()) {
-            costTimesMap[startup.getUniqueKey()] = CostTimesModel(
-                startup.simpleName,
-                callOnMainThread,
-                waitOnMainThread,
-                System.nanoTime() / ACCURACY
-            )
+            block().run {
+                costTimesMap[first.getUniqueKey()] = CostTimesModel(
+                    first.simpleName,
+                    second,
+                    third,
+                    System.nanoTime() / ACCURACY
+                )
+            }
         }
     }
 
-    fun recordEnd(startup: Class<out Startup<*>>) {
+    fun recordEnd(block: () -> Class<out Startup<*>>) {
         if (checkOpenStatistics()) {
-            costTimesMap[startup.getUniqueKey()]?.let {
+            costTimesMap[block().getUniqueKey()]?.let {
                 it.endTime = System.nanoTime() / ACCURACY
             }
         }
@@ -49,7 +51,7 @@ internal object StartupCostTimesUtils {
     }
 
     fun printAll() {
-        StartupLogUtils.d(buildString {
+        StartupLogUtils.d { buildString {
             append("startup cost times detail:")
             append("\n")
             append("|=================================================================")
@@ -75,7 +77,7 @@ internal object StartupCostTimesUtils {
             append("| Total Main Thread Times |   ${mainThreadTimes / ACCURACY} ms")
             append("\n")
             append("|=================================================================")
-        })
+        } }
     }
 
     private fun checkOpenStatistics() = StartupCacheManager.instance.initializedConfig?.openStatistic == true
