@@ -7,10 +7,10 @@ import com.rousetime.android_startup.Startup
  * Email: idisfkj@gmail.com.
  */
 
-const val DEFAULT_KEY = "com.rousetime.android_startup.defaultKey"
+private const val DEFAULT_KEY = "com.rousetime.android_startup.defaultKey"
 
-fun Class<out Startup<*>>.getUniqueKey(): String {
-    val canonicalName = this.canonicalName
-    requireNotNull(canonicalName) { "Local and anonymous classes can not be Startup" }
-    return "$DEFAULT_KEY:$canonicalName"
+internal fun Class<out Startup<*>>.getUniqueKey(): String {
+    return "$DEFAULT_KEY:$name"
 }
+
+internal fun String.getUniqueKey(): String = "$DEFAULT_KEY:$this"

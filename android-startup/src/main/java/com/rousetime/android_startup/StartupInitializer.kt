@@ -74,8 +74,15 @@ class StartupInitializer {
             if (!initialized.contains(uniqueKey)) {
                 initialize.add(uniqueKey)
                 result.add(startup)
-                startup.dependencies()?.forEach {
-                    doInitialize(it.getDeclaredConstructor().newInstance() as AndroidStartup<*>, result, initialize, initialized)
+                if (startup.dependenciesByName().isNullOrEmpty()) {
+                    startup.dependencies()?.forEach {
+                        doInitialize(it.getDeclaredConstructor().newInstance() as AndroidStartup<*>, result, initialize, initialized)
+                    }
+                } else {
+                    startup.dependenciesByName()?.forEach {
+                        val clazz = Class.forName(it)
+                        doInitialize(clazz.getDeclaredConstructor().newInstance() as AndroidStartup<*>, result, initialize, initialized)
+                    }
                 }
                 initialize.remove(uniqueKey)
                 initialized.add(uniqueKey)

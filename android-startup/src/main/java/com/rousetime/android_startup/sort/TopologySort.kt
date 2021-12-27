@@ -30,12 +30,21 @@ internal object TopologySort {
             if (!startupMap.containsKey(uniqueKey)) {
                 startupMap[uniqueKey] = it
                 // save in-degree
-                inDegreeMap[uniqueKey] = it.dependencies()?.size ?: 0
-                if (it.dependencies().isNullOrEmpty()) {
+                inDegreeMap[uniqueKey] = it.getDependenciesCount()
+                if (it.dependenciesByName().isNullOrEmpty() && it.dependencies().isNullOrEmpty()) {
                     zeroDeque.offer(uniqueKey)
-                } else {
+                } else if (it.dependenciesByName().isNullOrEmpty()) {
                     // add key parent, value list children
                     it.dependencies()?.forEach { parent ->
+                        val parentUniqueKey = parent.getUniqueKey()
+                        if (startupChildrenMap[parentUniqueKey] == null) {
+                            startupChildrenMap[parentUniqueKey] = arrayListOf()
+                        }
+                        startupChildrenMap[parentUniqueKey]?.add(uniqueKey)
+                    }
+                } else {
+                    // add key parent, value list children
+                    it.dependenciesByName()?.forEach { parent ->
                         val parentUniqueKey = parent.getUniqueKey()
                         if (startupChildrenMap[parentUniqueKey] == null) {
                             startupChildrenMap[parentUniqueKey] = arrayListOf()
@@ -103,7 +112,7 @@ internal object TopologySort {
                 append("\n")
                 append("|----------------------------------------------------------------")
                 append("\n")
-                append("|   Dependencies size    |    ${it.dependencies()?.size ?: 0}")
+                append("|   Dependencies size    |    ${it.getDependenciesCount()}")
                 append("\n")
                 append("|----------------------------------------------------------------")
                 append("\n")

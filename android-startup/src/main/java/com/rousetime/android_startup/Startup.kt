@@ -21,7 +21,18 @@ interface Startup<T> : Dispatcher, StartupExecutor {
     /**
      * Returns a list of the other [Startup] objects that the initializer depends on.
      */
+    @Deprecated("Used dependenciesByName instead", ReplaceWith("dependenciesByName()"))
     fun dependencies(): List<Class<out Startup<*>>>?
+
+    /**
+     * Returns a list of the other [Startup] Class Name that the initializer depends on.
+     */
+    fun dependenciesByName(): List<String>?
+
+    /**
+     * Returns size of depends on.
+     */
+    fun getDependenciesCount(): Int
 
     /**
      * Called whenever there is a dependency completion.
