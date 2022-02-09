@@ -69,7 +69,7 @@ This abstract implements the `Startup<T>` interface. And this abstract defines f
 
 * The `create(): T?`method,which contains all of the necessary operations to initialize the component and returns an instance of `T`
 
-* The `dependencies(): List<Class<out Startup<*>>>?`method,which returns a list of the other `Startup<*>` objects that the initializer depends on.
+* The `dependenciesByName(): List<String>?`method,which returns a list of type `String` that the initializer depends on.
 
 For example, Define a `SampleFirstStartup` class that implements `AndroidStartup<String>`:
 
@@ -85,13 +85,13 @@ class SampleFirstStartup : AndroidStartup<String>() {
         return this.javaClass.simpleName
     }
 
-    override fun dependencies(): List<Class<out Startup<*>>>? {
+    override fun dependenciesByName(): List<String>? {
         return null
     }
 
 }
 ```
-The `dependencies()` method returns an null list because `SampleFirstStartup ` does not depend on any other libraries.
+The `dependenciesByName()` method returns an null list because `SampleFirstStartup ` does not depend on any other libraries.
 
 Suppose that your app also depends on a library called `SampleSecondStartup`, which in turn depends on `SampleFirstStartup`. This dependency means that you need to make sure that Android Startup initializes `SampleFirstStartup ` first.
 
@@ -108,13 +108,13 @@ class SampleSecondStartup : AndroidStartup<Boolean>() {
         return true
     }
 
-    override fun dependencies(): List<Class<out Startup<*>>>? {
-        return listOf(SampleFirstStartup::class.java)
+    override fun dependenciesByName(): List<String> {
+        return listOf("com.rousetime.sample.startup.SampleFirstStartup")
     }
 
 }
 ```
-Because you include `SampleFirstStartup` in the `dependencies()` method, Android Startup initializes `SampleFirstStartup` before `SampleSecondStartup`.
+Because you include `com.rousetime.sample.startup.SampleFirstStartup` in the `dependenciesByName()` method, Android Startup initializes `SampleFirstStartup` before `SampleSecondStartup`.
 
 For example, you also define a [SampleThirdStartup](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/startup/SampleThirdStartup.kt) and a [SampleFourthStartup](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/startup/SampleFourthStartup.kt)
 

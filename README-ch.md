@@ -69,7 +69,7 @@ android-startup提供了两种使用方式，在使用之前需要先定义初�
 
 * `create(): T?`组件初始化方法，执行需要处理的初始化逻辑，支持返回一个`T`类型的实例。
 
-* `dependencies(): List<Class<out Startup<*>>>?`返回`Startup<*>`类型的list集合。用来表示当前组件在执行之前需要依赖的组件。
+* `dependenciesByName(): List<String>?`返回`String`类型的`list`集合。用来表示当前组件在执行之前需要依赖的组件。
 
 例如，下面定义一个`SampleFirstStartup`类来实现`AndroidStartup<String>`抽象类:
 
@@ -85,13 +85,13 @@ class SampleFirstStartup : AndroidStartup<String>() {
         return this.javaClass.simpleName
     }
 
-    override fun dependencies(): List<Class<out Startup<*>>>? {
+    override fun dependenciesByName(): List<String>? {
         return null
     }
 
 }
 ```
-因为`SampleFirstStartup`在执行之前不需要依赖其它组件，所以它的`dependencies()`方法可以返回空，同时它会在主线程中执行。
+因为`SampleFirstStartup`在执行之前不需要依赖其它组件，所以它的`dependenciesByName()`方法可以返回空，同时它会在主线程中执行。
 
 > 注意：️虽然`waitOnMainThread()`返回了`false`，但由于它是在主线程中执行，而主线程默认是阻塞的，所以`callCreateOnMainThread()`返回`true`时，该方法设置将失效。
 
@@ -110,13 +110,13 @@ class SampleSecondStartup : AndroidStartup<Boolean>() {
         return true
     }
 
-    override fun dependencies(): List<Class<out Startup<*>>>? {
-        return listOf(SampleFirstStartup::class.java)
+    override fun dependenciesByName(): List<String> {
+        return listOf("com.rousetime.sample.startup.SampleFirstStartup")
     }
 
 }
 ```
-在`dependencies()`方法中返回了`SampleFirstStartup`，所以它能保证`SampleFirstStartup`优先执行完毕。
+在`dependenciesByName()`方法中返回了`com.rousetime.sample.startup.SampleFirstStartup`，所以它能保证`SampleFirstStartup`优先执行完毕。
 它会在子线程中执行，但由于`waitOnMainThread()`返回了`true`，所以主线程会阻塞等待直到它执行完毕。
 
 例如，你还定义了[SampleThirdStartup](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/startup/SampleThirdStartup.kt)与[SampleFourthStartup](https://github.com/idisfkj/android-startup/blob/master/app/src/main/java/com/rousetime/sample/startup/SampleFourthStartup.kt)
@@ -139,7 +139,7 @@ class SampleSecondStartup : AndroidStartup<Boolean>() {
 
 </provider>
 ```
-你不需要将`SampleFirstStartup`、`SampleSecondStartup`与`SampleThirdStartup`添加到`<meta-data>`标签中。这是因为在`SampleFourthStartup`中，它的`dependencies()`中依赖了这些组件。`StartupProvider`会自动识别已经声明的组件中依赖的其它组件。
+你不需要将`SampleFirstStartup`、`SampleSecondStartup`与`SampleThirdStartup`添加到`<meta-data>`标签中。这是因为在`SampleFourthStartup`中，它的`dependenciesByName()`中依赖了这些组件。`StartupProvider`会自动识别已经声明的组件中依赖的其它组件。
 
 ### Application中手动配置
 第二种初始化方法是在Application进行手动配置。
